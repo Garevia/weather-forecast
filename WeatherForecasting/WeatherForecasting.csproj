@@ -15,10 +15,24 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\ValueObjects\" />
       <Folder Include="Infrastructure\Helpers\" />
       <Folder Include="obj\Debug\net8.0\" />
-      <Folder Include="Services\Interfaces\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="obj\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="obj\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="obj\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="obj\**" />
     </ItemGroup>
 
 </Project>
