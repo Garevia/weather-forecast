@@ -1,8 +1,42 @@
+using Microsoft.Extensions.Options;
+using WeatherForecasting.Application.Interfaces;
+using WeatherForecasting.Application.Queries;
+using WeatherForecasting.Application.Services;
+using WeatherForecasting.Infrastructure.WeatherProviders;
+using WeatherForecasting.Infrastructure.WeatherProviders.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddLogging();
+builder.Services.AddControllers();
+
+// Register real services
+builder.Services.AddSingleton<OpenWeatherMapService>();
+builder.Services.AddSingleton<WeatherstackService>();
+builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();
+builder.Services.AddSingleton<IOpenWeatherGeocodingService, OpenWeatherGeocodingService>();
+
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByCityHandler).Assembly));
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByLonAndLatHandler).Assembly));
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysHandler).Assembly));
+
+builder.Services.Configure<WeatherApiOptions>(
+    builder.Configuration.GetSection("OpenWeatherMap"));
+
+builder.Services.AddHttpClient<OpenWeatherMapService>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<WeatherApiOptions>>().Value;
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+});
+
+builder.Services.AddSingleton<IWeatherService, OpenWeatherMapService>();
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -15,30 +49,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();
