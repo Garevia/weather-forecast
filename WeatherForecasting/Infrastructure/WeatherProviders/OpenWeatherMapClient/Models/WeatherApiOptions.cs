@@ -1,4 +1,4 @@
-namespace WeatherForecasting.Infrastructure.WeatherProviders.Models;
+namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
 public class WeatherApiOptions
 {

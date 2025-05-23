@@ -16,7 +16,7 @@ public class WeatherController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    [HttpGet("by-city/{provider}/{city}")]
+    [HttpGet("by-city/{provider}/{city}/{countryCode}")]
     public async Task<IActionResult> GetForecastByCityAsync(WeatherProvider provider, string city, string countryCode)
     {
         var query = new GetWeatherForecastByCityQuery(city, countryCode, provider);
@@ -58,6 +58,25 @@ public class WeatherController : ControllerBase
     public async Task<IActionResult> GetForecastForFiveDaysAsync(WeatherProvider provider, double lon, double lat)
     {
         var query = new GetWeatherForecastForFiveDaysQuery(lon, lat, provider);
+        try
+        {
+            var service = await _mediator.Send(query);
+            return Ok(service);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+    
+    [HttpGet("get-geocoding/{provider}/{city}/{countryCode}")]
+    public async Task<IActionResult> GetGeocodingAsync(WeatherProvider provider, string city, string countryCode)
+    {
+        var query = new GetGeocodingQuery(city, countryCode, provider);
         try
         {
             var service = await _mediator.Send(query);

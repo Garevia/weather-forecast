@@ -1,20 +1,20 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using WeatherForecasting.Domain.Entities;
-using WeatherForecasting.Application.Interfaces;
-using WeatherForecasting.Application.Utilities;
-using WeatherForecasting.Infrastructure.WeatherProviders.Models;
+using WeatherForecasting.Infrastructure.Utilities;
+using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
-namespace WeatherForecasting.Infrastructure.WeatherProviders;
+namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 
-public class OpenWeatherMapService : IWeatherService
+public class OpenWeatherMapServiceClient : IWeatherServiceClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<OpenWeatherMapService> _logger;
+    private readonly ILogger<OpenWeatherMapServiceClient> _logger;
     private readonly string _apiKey;
     
-    public OpenWeatherMapService(HttpClient httpClient, 
-        ILogger<OpenWeatherMapService> logger, 
+    public OpenWeatherMapServiceClient(HttpClient httpClient, 
+        ILogger<OpenWeatherMapServiceClient> logger, 
         IOptions<WeatherApiOptions> options)
     {
         _logger = logger;
@@ -83,14 +83,14 @@ public class OpenWeatherMapService : IWeatherService
 
             var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
 
-            var result = new WeatherForecastForFiveDays()
+            var result = new WeatherForecastForFiveDays
             {
-                WeatherForecasts = forecast.list.Select(x => new WeatherForecastForTimeStamp()
-                {
-                    Description = x.weather[0].description,
-                    TemperatureCelsius = (decimal)x.main.temp,
-                    DateTime = TimeHelper.FromUnixTimeSeconds(x.dt)
-                }).ToList(),
+                CountryCode = forecast.City.Country,
+                City = forecast.City.Name,
+                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
+                    x.Weather[0].description,  
+                    (decimal)x.Main.temp, 
+                    TimeHelper.FromUnixTimeSeconds(x.dt))).ToList(),
             };
             
             return result;

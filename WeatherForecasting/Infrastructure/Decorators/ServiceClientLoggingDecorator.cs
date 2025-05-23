@@ -1,14 +1,22 @@
-using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
 namespace WeatherForecasting.Infrastructure.Decorators;
 
-public class WeatherServiceLoggingDecorator : WeatherServiceDecorator
+public class ServiceClientLoggingDecorator : ServiceClientDecorator
 {
-    private readonly ILogger<WeatherServiceLoggingDecorator> _logger;
+    private readonly ILogger<ServiceClientLoggingDecorator> _logger;
 
-    public WeatherServiceLoggingDecorator(IWeatherService service, ILogger<WeatherServiceLoggingDecorator> logger)
-        : base(service)
+    public ServiceClientLoggingDecorator(IWeatherServiceClient weatherServiceClient, ILogger<ServiceClientLoggingDecorator> logger)
+        : base(weatherServiceClient)
+    {
+        _logger = logger;
+    }
+    
+    public ServiceClientLoggingDecorator(IGeocodingServiceClient geocodingServiceClient, ILogger<ServiceClientLoggingDecorator> logger)
+        : base(geocodingServiceClient)
     {
         _logger = logger;
     }
@@ -19,7 +27,7 @@ public class WeatherServiceLoggingDecorator : WeatherServiceDecorator
 
         try
         {
-            var result = await _service.GetWeatherForecastByCityAsync(city, country);
+            var result = await _weatherServiceClient.GetWeatherForecastByCityAsync(city, country);
 
             _logger.LogInformation("Weather received: {Temp}°C, {Description}", result.TemperatureCelsius, result.Description);
             return result;
@@ -37,7 +45,7 @@ public class WeatherServiceLoggingDecorator : WeatherServiceDecorator
 
         try
         {
-            var result = await _service.GetWeatherForecastByLonAndLanAsync(lon, lat);
+            var result = await _weatherServiceClient.GetWeatherForecastByLonAndLanAsync(lon, lat);
 
             _logger.LogInformation("Weather received: {Temp}°C, {Description}", result.TemperatureCelsius, result.Description);
             return result;
@@ -55,7 +63,7 @@ public class WeatherServiceLoggingDecorator : WeatherServiceDecorator
 
         try
         {
-            var result = await _service.GetFiveDayForecastAsync(lon, lat);
+            var result = await _weatherServiceClient.GetFiveDayForecastAsync(lon, lat);
 
             return result;
         }
@@ -63,5 +71,23 @@ public class WeatherServiceLoggingDecorator : WeatherServiceDecorator
         {
             _logger.LogError(ex, "Error getting weather for {long} and {lat}", lon, lat);
             throw;
-        }    }
+        }    
+    }
+
+    public override async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
+    {
+        _logger.LogInformation("Requesting location for {city} and {countryCode}", city, countryCode);
+
+        try
+        {
+            var result = await _geocodingServiceClient.ResolveCoordinatesAsync(city, countryCode);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting weather for {city} and {countryCode}", city, countryCode);
+            throw;
+        }
+    }
 }

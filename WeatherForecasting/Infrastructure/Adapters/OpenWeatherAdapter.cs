@@ -9,10 +9,10 @@ public class OpenWeatherAdapter
     {
         return new WeatherForecastDto()
         {
+            DateTime = response.DateTime,
             TemperatureCelsius = response.TemperatureCelsius,
-            Description = response.Description,
-            City = response.City,
-            DateTime = response.DateTime
+            WeatherProvider = response.WeatherProvider,
+            Description = response.Description
         };
     }
 
@@ -20,14 +20,24 @@ public class OpenWeatherAdapter
     {
         return new WeatherForecastForFiveDaysDto()
         {
-           WeatherForecasts = response.WeatherForecasts.Select(x => new WeatherForecastForTimeStampDto()
+           City = response.City,
+           CountryCode = response.CountryCode,
+           WeatherForecasts = response.Forecasts.Select(x => new WeatherForecastForTimeStampDto()
            {
                DateTime = x.DateTime,
                TemperatureCelsius = x.TemperatureCelsius,
                Description = x.Description,
-           }).ToList(),
-           City = response.City,
-           CountryCode = response.CountryCode
+               Provider = x.WeatherProvider,
+           }).ToList()
+        };
+    }
+    
+    public static GeolocationDto ToDomain(Geolocation response)
+    {
+        return new GeolocationDto()
+        {
+           Longittude = response.Longittude,
+           Lattitude = response.Lattitude
         };
     }
 }

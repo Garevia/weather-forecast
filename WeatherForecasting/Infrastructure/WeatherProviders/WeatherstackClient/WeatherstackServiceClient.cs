@@ -1,9 +1,10 @@
-using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 
-namespace WeatherForecasting.Infrastructure.WeatherProviders;
+namespace WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
 
-public class WeatherstackService : IWeatherService
+public class WeatherstackServiceClient : IWeatherServiceClient
 {
     public Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
     {

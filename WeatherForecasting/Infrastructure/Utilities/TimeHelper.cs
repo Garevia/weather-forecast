@@ -1,4 +1,4 @@
-namespace WeatherForecasting.Application.Utilities;
+namespace WeatherForecasting.Infrastructure.Utilities;
 
 public static class TimeHelper
 {

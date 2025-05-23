@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\Helpers\" />
       <Folder Include="obj\Debug\net8.0\" />
     </ItemGroup>
 

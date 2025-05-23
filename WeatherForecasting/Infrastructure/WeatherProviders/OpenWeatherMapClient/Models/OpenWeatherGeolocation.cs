@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace WeatherForecasting.Infrastructure.WeatherProviders.Models;
+namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
 public class OpenWeatherGeolocation
 {

@@ -1,8 +1,12 @@
 using WeatherForecasting.Domain.Enums;
+using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 
 namespace WeatherForecasting.Application.Interfaces;
 
 public interface IWeatherServiceFactory
 { 
-    IWeatherService Create(WeatherProvider provider);
+    IWeatherServiceClient CreateWeatherServiceClient(WeatherProvider provider);
+
+    IGeocodingServiceClient CreateGeolocationServiceClient(WeatherProvider provider);
 }

@@ -7,17 +7,16 @@ namespace WeatherForecasting.Application.Queries;
 
 public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecastByCityQuery, WeatherForecastDto>
 {
-    private readonly IWeatherServiceFactory _serviceFactory;
+    private readonly IWeatherService _weatherService;
 
-    public GetWeatherForecastByCityHandler(IWeatherServiceFactory serviceFactory)
+    public GetWeatherForecastByCityHandler(IWeatherService weatherService)
     {
-        _serviceFactory = serviceFactory;
+        _weatherService = weatherService;
     }
 
     public async Task<WeatherForecastDto> Handle(GetWeatherForecastByCityQuery request, CancellationToken cancellationToken)
     {
-        var serviceProvider = _serviceFactory.Create(request.Provider);
-        var response = await serviceProvider.GetWeatherForecastByCityAsync(request.City, request.Country);
+        var response = await _weatherService.GetWeatherForecastByCityAsync(request.City, request.Country, request.Provider);
         
         return OpenWeatherAdapter.ToDomain(response);;
     }
