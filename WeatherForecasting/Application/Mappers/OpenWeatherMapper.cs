@@ -1,9 +1,9 @@
 using WeatherForecasting.Application.Weather.DTO;
 using WeatherForecasting.Domain.Entities;
 
-namespace WeatherForecasting.Infrastructure.Adapters;
+namespace WeatherForecasting.Application.Mappers;
 
-public class OpenWeatherAdapter
+public static class OpenWeatherMapper
 {
     public static WeatherForecastDto ToDomain(WeatherForecast response)
     {

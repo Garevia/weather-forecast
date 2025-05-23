@@ -54,10 +54,29 @@ public class WeatherController : ControllerBase
         }
     }
     
-    [HttpGet("for-five-days/{provider}/{lon}/{lat}")]
-    public async Task<IActionResult> GetForecastForFiveDaysAsync(WeatherProvider provider, double lon, double lat)
+    [HttpGet("for-five-days-by-long-lat/{provider}/{lon}/{lat}")]
+    public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProvider provider, double lon, double lat)
     {
-        var query = new GetWeatherForecastForFiveDaysQuery(lon, lat, provider);
+        var query = new GetWeatherForecastForFiveDaysByLonAndLatQuery(lon, lat, provider);
+        try
+        {
+            var service = await _mediator.Send(query);
+            return Ok(service);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+    
+    [HttpGet("for-five-days-by-city/{provider}/{city}/{countryCode}")]
+    public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProvider provider, string city, string countryCode)
+    {
+        var query = new GetWeatherForecastForFiveDaysByCityQuery(city, countryCode, provider);
         try
         {
             var service = await _mediator.Send(query);

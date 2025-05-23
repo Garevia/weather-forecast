@@ -74,6 +74,23 @@ public class ServiceClientLoggingDecorator : ServiceClientDecorator
         }    
     }
 
+    public override async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode)
+    {
+        _logger.LogInformation("Requesting weather for {city} and {countryCode}", city, countryCode);
+
+        try
+        {
+            var result = await _weatherServiceClient.GetFiveDayForecastAsync(city, countryCode);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting weather for {city} and {countryCode}", city, countryCode);
+            throw;
+        }       
+    }
+
     public override async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
     {
         _logger.LogInformation("Requesting location for {city} and {countryCode}", city, countryCode);

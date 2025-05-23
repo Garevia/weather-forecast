@@ -20,4 +20,9 @@ public class WeatherstackServiceClient : IWeatherServiceClient
     {
         throw new NotImplementedException();
     }
+
+    public Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string country)
+    {
+        throw new NotImplementedException();
+    }
 }

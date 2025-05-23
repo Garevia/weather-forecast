@@ -26,5 +26,7 @@ public abstract class ServiceClientDecorator : IWeatherServiceClient, IGeocoding
     
     public abstract Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double lon, double lat);
     
+    public abstract Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string country);
+
     public abstract Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode);
 }

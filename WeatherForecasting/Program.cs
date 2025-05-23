@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Application.Queries;
 using WeatherForecasting.Application.Services;
@@ -22,21 +23,29 @@ builder.Services.AddSingleton<WeatherstackGeocodingServiceClient>();
 
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();
+builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
+builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
 builder.Services.AddSingleton<IGeocodingServiceClient, OpenWeatherGeocodingServiceClient>();
 builder.Services.AddSingleton<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
+builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
 
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByCityHandler).Assembly));
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByLonAndLatHandler).Assembly));
 builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysHandler).Assembly));
+    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysByLonAndLatHandler).Assembly));
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysByCityHandler).Assembly));
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(GetGeocodingHandler).Assembly));
 
 builder.Services.Configure<WeatherApiOptions>(
     builder.Configuration.GetSection("OpenWeatherMap"));
+
+builder.Services.Configure<RedisOptions>(
+    builder.Configuration.GetSection("Redis"));
 
 builder.Services.AddHttpClient<OpenWeatherMapServiceClient>((provider, client) =>
 {
@@ -51,6 +60,15 @@ builder.Services.AddHttpClient<OpenWeatherGeocodingServiceClient>((provider, cli
 
     client.BaseAddress = new Uri(options.BaseUrl);
 });
+
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+
+// Register the Redis connection multiplexer as a singleton
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(redisConnectionString));
+
+var redis = ConnectionMultiplexer.Connect("localhost:6379");
+builder.Services.AddSingleton(redis);
 
 builder.Services.AddSingleton<IWeatherServiceClient, OpenWeatherMapServiceClient>();
 

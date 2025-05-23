@@ -1,7 +1,7 @@
 using MediatR;
 using WeatherForecasting.Application.Interfaces;
+using WeatherForecasting.Application.Mappers;
 using WeatherForecasting.Application.Weather.DTO;
-using WeatherForecasting.Infrastructure.Adapters;
 
 namespace WeatherForecasting.Application.Queries;
 
@@ -18,6 +18,6 @@ public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecas
     {
         var response = await _weatherService.GetWeatherForecastByCityAsync(request.City, request.Country, request.Provider);
         
-        return OpenWeatherAdapter.ToDomain(response);;
+        return OpenWeatherMapper.ToDomain(response);;
     }
 }

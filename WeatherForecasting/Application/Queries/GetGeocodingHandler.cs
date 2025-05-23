@@ -1,23 +1,23 @@
 using MediatR;
 using WeatherForecasting.Application.Interfaces;
+using WeatherForecasting.Application.Mappers;
 using WeatherForecasting.Application.Weather.DTO;
-using WeatherForecasting.Infrastructure.Adapters;
 
 namespace WeatherForecasting.Application.Queries;
 
 public class GetGeocodingHandler : IRequestHandler<GetGeocodingQuery, GeolocationDto>
 {
-    private readonly IWeatherService _weatherService;
+    private readonly IGeocodingService _geocodingService;
 
-    public GetGeocodingHandler(IWeatherService weatherService)
+    public GetGeocodingHandler(IGeocodingService geocodingService)
     {
-        _weatherService = weatherService;
+        _geocodingService = geocodingService;
     }
 
     public async Task<GeolocationDto> Handle(GetGeocodingQuery request, CancellationToken cancellationToken)
     {
-        var response = await _weatherService.ResolveCoordinatesAsync(request.City, request.Country, request.Provider);
+        var response = await _geocodingService.ResolveCoordinatesAsync(request.City, request.Country, request.Provider);
         
-        return OpenWeatherAdapter.ToDomain(response);;
+        return OpenWeatherMapper.ToDomain(response);;
     }
 }

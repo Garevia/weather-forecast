@@ -11,5 +11,5 @@ public interface IWeatherService
     
     Task<WeatherForecastForFiveDays> GetFiveDayForecastsAsync(double lon, double lat, WeatherProvider provider);
     
-    Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode, WeatherProvider provider);
+    Task<WeatherForecastForFiveDays> GetFiveDayForecastsAsync(string city, string country, WeatherProvider provider);
 }

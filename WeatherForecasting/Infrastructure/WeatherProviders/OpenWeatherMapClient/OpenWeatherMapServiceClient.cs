@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using WeatherForecasting.Domain.Entities;
 using WeatherForecasting.Infrastructure.Utilities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
@@ -12,15 +13,22 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
     private readonly HttpClient _httpClient;
     private readonly ILogger<OpenWeatherMapServiceClient> _logger;
     private readonly string _apiKey;
-    
+    private readonly TimeSpan _redisCacheDuration;
+    private readonly IDatabase _redisDb;
+
     public OpenWeatherMapServiceClient(HttpClient httpClient, 
         ILogger<OpenWeatherMapServiceClient> logger, 
-        IOptions<WeatherApiOptions> options)
+        IOptions<WeatherApiOptions> options,
+        IOptions<RedisOptions> redisOptions,
+        ConnectionMultiplexer redis)
     {
         _logger = logger;
         _apiKey = options.Value.ApiKey
                   ?? throw new ArgumentNullException("OpenWeatherMap API key is not configured");
+        _redisCacheDuration = redisOptions.Value.TimeSpan;
         _httpClient = httpClient;
+        _redisDb = redis.GetDatabase();
+
     }
 
     public async Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
@@ -30,17 +38,31 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             if (string.IsNullOrWhiteSpace(city)) throw new ArgumentException("City name is required");
             if (string.IsNullOrWhiteSpace(country)) throw new ArgumentException("Country code is required");
             
+            string cacheKey = $"weather:{city}{country}";
+            var cachedData = await _redisDb.StringGetAsync(cacheKey);
+            if (cachedData.HasValue)
+            {
+                var cachedForecast = JsonSerializer.Deserialize<OpenWeatherResponse>(cachedData);
+            
+                return new WeatherForecast(
+                    cachedForecast.name,
+                    cachedForecast.weather[0].Description,  
+                    (decimal)cachedForecast.main.Temperature, 
+                    TimeHelper.FromUnixTimeSeconds(cachedForecast.dt));
+            }
+            
             var url = string.Format(WeatherApiEndpoints.CurrentWeatherByCity, city, country, _apiKey);
 
             var response = await _httpClient.GetStringAsync(url);
             
             var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
-            
+            await _redisDb.StringSetAsync(cacheKey, response, _redisCacheDuration);
+
             return new WeatherForecast(
                 forecast.name,
-                forecast.weather[0].description,  
-                (decimal)forecast.main.temp, 
-                TimeHelper.FromUnixTimeSeconds(forecast.dt) );
+                forecast.weather[0].Description,  
+                (decimal)forecast.main.Temperature, 
+                TimeHelper.FromUnixTimeSeconds(forecast.dt));
         }
         catch (Exception ex)
         {
@@ -61,8 +83,8 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
             return new WeatherForecast(
                 forecast.name, 
-                forecast.weather[0].description,  
-                (decimal)forecast.main.temp, 
+                forecast.weather[0].Description,  
+                (decimal)forecast.main.Temperature, 
                 TimeHelper.FromUnixTimeSeconds(forecast.dt));
         }
         catch (Exception ex)
@@ -88,9 +110,9 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
                 CountryCode = forecast.City.Country,
                 City = forecast.City.Name,
                 Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
-                    x.Weather[0].description,  
-                    (decimal)x.Main.temp, 
-                    TimeHelper.FromUnixTimeSeconds(x.dt))).ToList(),
+                    x.Weather[0].Description,  
+                    (decimal)x.Main.Temperature, 
+                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
             };
             
             return result;
@@ -98,6 +120,36 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching weather data for long {long} and  lat {lat}", lon, lat);
+            throw;
+        }   
+    }
+
+    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode)
+    {
+        try
+        {
+            var url = string.Format(WeatherApiEndpoints.Forecast5DayByCity, city, countryCode,
+                _apiKey);
+
+            var response = await _httpClient.GetStringAsync(url);
+
+            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
+
+            var result = new WeatherForecastForFiveDays
+            {
+                CountryCode = countryCode ,
+                City = city,
+                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
+                    x.Weather[0].Description,  
+                    (decimal)x.Main.Temperature, 
+                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
+            };
+            
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching weather data for City {city} and  Country {country}", city, countryCode);
             throw;
         }   
     }

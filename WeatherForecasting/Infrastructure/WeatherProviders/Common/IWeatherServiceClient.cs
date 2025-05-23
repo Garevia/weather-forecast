@@ -9,4 +9,6 @@ public interface IWeatherServiceClient
     Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat);
     
     Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double lon, double lat);
+    
+    Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode);
 }

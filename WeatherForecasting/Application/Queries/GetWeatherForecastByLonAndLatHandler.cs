@@ -1,7 +1,7 @@
 using MediatR;
 using WeatherForecasting.Application.Interfaces;
+using WeatherForecasting.Application.Mappers;
 using WeatherForecasting.Application.Weather.DTO;
-using WeatherForecasting.Infrastructure.Adapters;
 
 namespace WeatherForecasting.Application.Queries;
 
@@ -18,6 +18,6 @@ public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherFo
     {
         var response = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.lon, request.lat, request.Provider);
         
-        return OpenWeatherAdapter.ToDomain(response);;
+        return OpenWeatherMapper.ToDomain(response);;
     }
 }
