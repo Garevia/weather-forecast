@@ -1,0 +1,45 @@
+# Build
+bin/
+obj/
+out/
+
+# Rider / VS Code / VS
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.vspscc
+*.vssscc
+*.pdb
+*.mdb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets
+appsettings.*.json
+secrets.json
+
+# Test Results
+TestResults/
+*.ncrunch*
+*.coverage
+*.coverlet.*
+
+# Packages
+*.nupkg
+*.snupkg
+*.nuspec
+*.tgz
+packages/
