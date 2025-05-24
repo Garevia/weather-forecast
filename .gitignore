@@ -11,6 +11,9 @@ out/
 *.userosscache
 *.sln.docstates
 
+# Ignore compiled DLLs
+*.dll
+
 # .NET
 project.lock.json
 project.fragment.lock.json
