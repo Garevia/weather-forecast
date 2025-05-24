@@ -2,5 +2,5 @@ namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClien
 
 public class RedisOptions
 {
-    public TimeSpan TimeSpan { get; set; }
+    public TimeSpan? TimeSpan { get; set; }
 }

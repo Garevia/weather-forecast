@@ -21,6 +21,5 @@ public class GetWeatherForecastForFiveDaysByCityHandler : IRequestHandler<GetWea
         var response = await _weatherService.GetFiveDayForecastsAsync(request.City, request.Country, request.Provider);
 
         return OpenWeatherMapper.ToDomain(response);
-        ;
     }
 }

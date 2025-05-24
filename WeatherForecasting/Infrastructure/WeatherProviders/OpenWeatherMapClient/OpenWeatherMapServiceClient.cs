@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Infrastructure.Common;
 using WeatherForecasting.Infrastructure.Utilities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
@@ -25,7 +26,6 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         _logger = logger;
         _apiKey = options.Value.ApiKey
                   ?? throw new ArgumentNullException("OpenWeatherMap API key is not configured");
-        _redisCacheDuration = redisOptions.Value.TimeSpan;
         _httpClient = httpClient;
         _redisDb = redis.GetDatabase();
 
@@ -64,64 +64,16 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
                 (decimal)forecast.main.Temperature, 
                 TimeHelper.FromUnixTimeSeconds(forecast.dt));
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "Error fetching weather data for city {City}", city);
-            throw;
-        }
-    }
-
-    public async Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat)
-    {
-        try
-        {
-            var url = string.Format(WeatherApiEndpoints.CurrentWeatherByLongitudeAndLattitude, lat, lon,
-                _apiKey);
-
-            var response = await _httpClient.GetStringAsync(url);
-
-            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
-            return new WeatherForecast(
-                forecast.name, 
-                forecast.weather[0].Description,  
-                (decimal)forecast.main.Temperature, 
-                TimeHelper.FromUnixTimeSeconds(forecast.dt));
+            throw new WeatherApiException("Failed to fetch weather data from OpenWeather.", ex);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching weather data for long {long} and  lat {lat}", lon, lat);
-            throw;
-        }    
-    }
-
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double lon, double lat)
-    {
-        try
-        {
-            var url = string.Format(WeatherApiEndpoints.Forecast5Day, lat, lon,
-                _apiKey);
-
-            var response = await _httpClient.GetStringAsync(url);
-
-            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
-
-            var result = new WeatherForecastForFiveDays
-            {
-                CountryCode = forecast.City.Country,
-                City = forecast.City.Name,
-                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
-                    x.Weather[0].Description,  
-                    (decimal)x.Main.Temperature, 
-                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
-            };
-            
-            return result;
+            _logger.LogError(ex, "Unexpected error while calling OpenWeather");
+            throw new WeatherApiException("Unexpected error while calling OpenWeather.", ex);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching weather data for long {long} and  lat {lat}", lon, lat);
-            throw;
-        }   
     }
 
     public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode)
@@ -147,10 +99,78 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             
             return result;
         }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching weather data for city {City}", city);
+            throw new WeatherApiException("Failed to fetch weather data from OpenWeather.", ex);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching weather data for City {city} and  Country {country}", city, countryCode);
-            throw;
-        }   
+            _logger.LogError(ex, "Unexpected error while calling OpenWeather");
+            throw new WeatherApiException("Unexpected error while calling OpenWeather.", ex);
+        }
+    }
+    
+    public async Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
+    {
+        try
+        {
+            var url = string.Format(WeatherApiEndpoints.CurrentWeatherByLongitudeAndLattitude, latitude, longitude,
+                _apiKey);
+
+            var response = await _httpClient.GetStringAsync(url);
+
+            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
+            return new WeatherForecast(
+                forecast.name, 
+                forecast.weather[0].Description,  
+                (decimal)forecast.main.Temperature, 
+                TimeHelper.FromUnixTimeSeconds(forecast.dt));
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching weather data for latitude {Latitude}, {Longitude}", latitude, longitude);
+            throw new WeatherApiException("Failed to fetch weather data from OpenWeather.", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while calling OpenWeather");
+            throw new WeatherApiException("Unexpected error while calling OpenWeather.", ex);
+        }
+    }
+
+    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double longitude, double latitude)
+    {
+        try
+        {
+            var url = string.Format(WeatherApiEndpoints.Forecast5Day, latitude, longitude,
+                _apiKey);
+
+            var response = await _httpClient.GetStringAsync(url);
+
+            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
+
+            var result = new WeatherForecastForFiveDays
+            {
+                CountryCode = forecast.City.Country,
+                City = forecast.City.Name,
+                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
+                    x.Weather[0].Description,  
+                    (decimal)x.Main.Temperature, 
+                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
+            };
+            
+            return result;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error fetching weather data for latitude {Latitude}, {Longitude}", latitude, longitude);
+            throw new WeatherApiException("Failed to fetch weather data from OpenWeather.", ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while calling OpenWeather");
+            throw new WeatherApiException("Unexpected error while calling OpenWeather.", ex);
+        }
     }
 }

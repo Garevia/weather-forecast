@@ -1,8 +1,11 @@
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Domain.Enums;
 using WeatherForecasting.Infrastructure.Decorators;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
+using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders;
@@ -10,9 +13,15 @@ namespace WeatherForecasting.Infrastructure.WeatherProviders;
 public class WeatherServiceFactory : IWeatherServiceFactory
 {
     private readonly IServiceProvider _serviceProvider;
-
-    public WeatherServiceFactory(IServiceProvider serviceProvider)
+    private readonly IOptions<RedisOptions> _redisOptions;
+    private readonly ConnectionMultiplexer _redisDb;
+    public WeatherServiceFactory(
+        IServiceProvider serviceProvider,
+        IOptions<RedisOptions> redisOptions,
+        ConnectionMultiplexer redisDb)
     {
+        _redisDb = redisDb;
+        _redisOptions = redisOptions;
         _serviceProvider = serviceProvider;
     }
 
@@ -25,10 +34,15 @@ public class WeatherServiceFactory : IWeatherServiceFactory
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        var decoratedService = new ServiceClientLoggingDecorator(
+        var loggingDecoratedService = new ServiceClientLoggingDecorator(
             baseServiceClient, 
             _serviceProvider.GetRequiredService<ILogger<ServiceClientLoggingDecorator>>());
 
-        return decoratedService;
+        var cacheDecoratedService = new ServiceClientCachingDecorator(loggingDecoratedService, 
+            _redisOptions,
+            _redisDb,
+            _serviceProvider.GetRequiredService<ILogger<ServiceClientCachingDecorator>>());
+        
+        return cacheDecoratedService;
     }
 }

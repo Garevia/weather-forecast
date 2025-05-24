@@ -16,7 +16,7 @@ public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherFo
 
     public async Task<WeatherForecastDto> Handle(GetWeatherForecastByLonAndLatQuery request, CancellationToken cancellationToken)
     {
-        var response = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.lon, request.lat, request.Provider);
+        var response = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude, request.Provider);
         
         return OpenWeatherMapper.ToDomain(response);;
     }

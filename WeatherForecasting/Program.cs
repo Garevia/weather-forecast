@@ -1,8 +1,11 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using WeatherForecasting.Application.Interfaces;
-using WeatherForecasting.Application.Queries;
 using WeatherForecasting.Application.Services;
+using WeatherForecasting.Application.Validators;
+using WeatherForecasting.Controllers.Middleware;
 using WeatherForecasting.Infrastructure.WeatherProviders;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
@@ -16,7 +19,7 @@ builder.Services.AddLogging();
 builder.Services.AddControllers();
 
 // Register real services
-builder.Services.AddSingleton<OpenWeatherMapServiceClient>();
+builder.Services.AddTransient<OpenWeatherMapServiceClient>();
 builder.Services.AddSingleton<WeatherstackServiceClient>();
 builder.Services.AddSingleton<OpenWeatherGeocodingServiceClient>();
 builder.Services.AddSingleton<WeatherstackGeocodingServiceClient>();
@@ -25,21 +28,13 @@ builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();
 builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
 builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
-builder.Services.AddSingleton<IGeocodingServiceClient, OpenWeatherGeocodingServiceClient>();
-builder.Services.AddSingleton<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
-builder.Services.AddSingleton<IWeatherService, WeatherService>();
-builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
 
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByCityHandler).Assembly));
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastByLonAndLatHandler).Assembly));
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysByLonAndLatHandler).Assembly));
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetWeatherForecastForFiveDaysByCityHandler).Assembly));
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(GetGeocodingHandler).Assembly));
+builder.Services.AddTransient<IGeocodingServiceClient, OpenWeatherGeocodingServiceClient>();
+builder.Services.AddTransient<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
+builder.Services.AddTransient<IWeatherService, WeatherService>();
+builder.Services.AddTransient<IGeocodingService, GeocodingService>();
+
+RegisterMediator(builder);
 
 builder.Services.Configure<WeatherApiOptions>(
     builder.Configuration.GetSection("OpenWeatherMap"));
@@ -85,5 +80,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 await app.RunAsync();
+
+void RegisterMediator(WebApplicationBuilder webApplicationBuilder)
+{
+    builder.Services.AddMediatR(cfg =>
+    {
+        cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    });
+
+    builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+}

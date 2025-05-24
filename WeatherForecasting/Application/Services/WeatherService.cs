@@ -43,6 +43,4 @@ public class WeatherService : IWeatherService
         var weatherProvider = _weatherServiceFactory.CreateWeatherServiceClient(provider);
         return await weatherProvider.GetFiveDayForecastAsync(city, country);
     }
-
-    
 }

@@ -1,6 +1,5 @@
 using WeatherForecasting.Domain.Entities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
-using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
 
