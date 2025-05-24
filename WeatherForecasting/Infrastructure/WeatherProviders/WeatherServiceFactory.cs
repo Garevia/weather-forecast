@@ -25,7 +25,7 @@ public class WeatherServiceFactory : IWeatherServiceFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IWeatherServiceClient CreateWeatherServiceClient(WeatherProvider provider)
+    public IWeatherServiceClient GetWeatherServiceClient(WeatherProvider provider)
     {
         IWeatherServiceClient baseServiceClient = provider switch
         {
@@ -34,14 +34,14 @@ public class WeatherServiceFactory : IWeatherServiceFactory
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        var loggingDecoratedService = new ServiceClientLoggingDecorator(
+        var loggingDecoratedService = new WeatherServiceClientLoggingDecorator(
             baseServiceClient, 
-            _serviceProvider.GetRequiredService<ILogger<ServiceClientLoggingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<WeatherServiceClientLoggingDecorator>>());
 
-        var cacheDecoratedService = new ServiceClientCachingDecorator(loggingDecoratedService, 
+        var cacheDecoratedService = new WeatherServiceClientCachingDecorator(loggingDecoratedService, 
             _redisOptions,
             _redisDb,
-            _serviceProvider.GetRequiredService<ILogger<ServiceClientCachingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<WeatherServiceClientCachingDecorator>>());
         
         return cacheDecoratedService;
     }

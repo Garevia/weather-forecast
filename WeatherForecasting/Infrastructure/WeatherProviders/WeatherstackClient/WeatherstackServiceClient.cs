@@ -15,12 +15,12 @@ public class WeatherstackServiceClient : IWeatherServiceClient
         throw new NotImplementedException();
     }
 
-    public Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double lon, double lat)
+    public Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double lon, double lat)
     {
         throw new NotImplementedException();
     }
 
-    public Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string country)
+    public Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string country)
     {
         throw new NotImplementedException();
     }

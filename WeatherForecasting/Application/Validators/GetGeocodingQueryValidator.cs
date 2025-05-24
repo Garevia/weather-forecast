@@ -11,7 +11,7 @@ public class GetGeocodingQueryValidator :  AbstractValidator<GetGeocodingQuery>
             .NotEmpty().WithMessage("City must be provided.")
             .MaximumLength(100);
         
-        RuleFor(x => x.Country)
+        RuleFor(x => x.CountryCode)
             .NotEmpty().WithMessage("Country must be provided.")
             .MaximumLength(3);
 

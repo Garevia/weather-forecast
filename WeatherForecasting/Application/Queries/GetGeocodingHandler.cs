@@ -7,16 +7,17 @@ namespace WeatherForecasting.Application.Queries;
 
 public class GetGeocodingHandler : IRequestHandler<GetGeocodingQuery, GeolocationDto>
 {
-    private readonly IGeocodingService _geocodingService;
+    private readonly IGeolocationServiceFactory _geocodingServiceFactory;
 
-    public GetGeocodingHandler(IGeocodingService geocodingService)
+    public GetGeocodingHandler(IGeolocationServiceFactory geocodingServiceFactory)
     {
-        _geocodingService = geocodingService;
+        _geocodingServiceFactory = geocodingServiceFactory;
     }
 
     public async Task<GeolocationDto> Handle(GetGeocodingQuery request, CancellationToken cancellationToken)
     {
-        var response = await _geocodingService.ResolveCoordinatesAsync(request.City, request.Country, request.Provider);
+        var geocodingService = _geocodingServiceFactory.GetGeolocationServiceClient(request.Provider);
+        var response = await geocodingService.ResolveCoordinatesAsync(request.City, request.CountryCode);
         
         return OpenWeatherMapper.ToDomain(response);;
     }

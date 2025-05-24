@@ -26,8 +26,9 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
         _serviceProvider = serviceProvider;
     }
     
-    public IGeocodingServiceClient CreateGeolocationServiceClient(WeatherProvider provider)
+    public IGeocodingServiceClient GetGeolocationServiceClient(WeatherProvider provider)
     {
+        
         IGeocodingServiceClient baseServiceClient = provider switch
         {
             WeatherProvider.OpenWeather => _serviceProvider.GetRequiredService<OpenWeatherGeocodingServiceClient>(),
@@ -35,14 +36,15 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        var loggingDecoratedService = new ServiceClientLoggingDecorator(
+        var loggingDecoratedService = new GeolocationServiceClientLoggingDecorator(
             baseServiceClient, 
-            _serviceProvider.GetRequiredService<ILogger<ServiceClientLoggingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<GeolocationServiceClientLoggingDecorator>>());
 
-        var cacheDecoratedService = new ServiceClientCachingDecorator(loggingDecoratedService, 
+        var cacheDecoratedService = new GeolocationServiceClientCachingDecorator(
+            loggingDecoratedService, 
             _redisOptions,
             _redisDb,
-            _serviceProvider.GetRequiredService<ILogger<ServiceClientCachingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<GeolocationServiceClientCachingDecorator>>());
         
         return cacheDecoratedService;
     }

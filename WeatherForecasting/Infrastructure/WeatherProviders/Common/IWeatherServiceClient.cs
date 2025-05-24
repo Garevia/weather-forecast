@@ -8,7 +8,7 @@ public interface IWeatherServiceClient
     
     Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double lon, double lat);
+    Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double lon, double lat);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode);
+    Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode);
 }

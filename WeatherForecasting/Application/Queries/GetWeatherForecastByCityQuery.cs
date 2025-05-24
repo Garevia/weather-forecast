@@ -4,4 +4,4 @@ using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Queries;
 
-public record GetWeatherForecastByCityQuery(string City, string Country, WeatherProvider Provider) : IRequest<WeatherForecastDto>;
+public record GetWeatherForecastByCityQuery(string City, string CountryCode, WeatherProvider Provider) : IRequest<WeatherForecastDto>;

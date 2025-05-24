@@ -5,5 +5,5 @@ namespace WeatherForecasting.Application.Interfaces;
 
 public interface IWeatherServiceFactory
 { 
-    IWeatherServiceClient CreateWeatherServiceClient(WeatherProvider provider);
+    IWeatherServiceClient GetWeatherServiceClient(WeatherProvider provider);
 }

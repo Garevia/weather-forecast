@@ -5,5 +5,5 @@ namespace WeatherForecasting.Application.Interfaces;
 
 public interface IGeolocationServiceFactory
 {
-    IGeocodingServiceClient CreateGeolocationServiceClient(WeatherProvider provider);
+    IGeocodingServiceClient GetGeolocationServiceClient(WeatherProvider provider);
 }

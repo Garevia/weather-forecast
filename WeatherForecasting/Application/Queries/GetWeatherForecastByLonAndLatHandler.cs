@@ -7,16 +7,18 @@ namespace WeatherForecasting.Application.Queries;
 
 public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherForecastByLonAndLatQuery, WeatherForecastDto>
 {
-    private readonly IWeatherService _weatherService;
+    private readonly IWeatherServiceFactory _weatherServiceFactory;
 
-    public GetWeatherForecastByLonAndLatHandler(IWeatherService weatherService)
+    public GetWeatherForecastByLonAndLatHandler(IWeatherServiceFactory weatherServiceFactory)
     {
-        _weatherService = weatherService;
+        _weatherServiceFactory = weatherServiceFactory;
     }
 
     public async Task<WeatherForecastDto> Handle(GetWeatherForecastByLonAndLatQuery request, CancellationToken cancellationToken)
     {
-        var response = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude, request.Provider);
+        var weatherService = _weatherServiceFactory.GetWeatherServiceClient(request.Provider);
+
+        var response = await weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude);
         
         return OpenWeatherMapper.ToDomain(response);;
     }

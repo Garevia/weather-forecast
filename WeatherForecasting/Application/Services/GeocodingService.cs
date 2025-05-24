@@ -1,21 +1,20 @@
 using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Domain.Entities;
-using WeatherForecasting.Domain.Enums;
+using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 namespace WeatherForecasting.Application.Services;
 
 public class GeocodingService : IGeocodingService
 {
-    private readonly IGeolocationServiceFactory _geolocationServiceFactory;
+    private readonly IGeocodingServiceClient _geocodingServiceClient;
 
-    public GeocodingService(IGeolocationServiceFactory geolocationServiceFactory)
+    public GeocodingService(IGeocodingServiceClient geocodingServiceClient)
     {
-        this._geolocationServiceFactory = geolocationServiceFactory;
+        this._geocodingServiceClient = geocodingServiceClient;
     }
     
-    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode, WeatherProvider provider)
+    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
     {
-        var geolocationProvider = _geolocationServiceFactory.CreateGeolocationServiceClient(provider);
-        return await geolocationProvider.ResolveCoordinatesAsync(city, countryCode);
+        return await _geocodingServiceClient.ResolveCoordinatesAsync(city, countryCode);
     }
 }
