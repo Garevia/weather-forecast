@@ -1,7 +1,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.Common;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
@@ -19,7 +20,7 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
                   ?? throw new ArgumentNullException("OpenWeatherMap API key is not configured");
     }
 
-    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
+    public async Task<Result<GeolocationDto>> ResolveCoordinatesAsync(string city, string countryCode)
     {
         try
         {
@@ -27,16 +28,22 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
                 _apiKey);
 
             var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
 
+            if (!response.IsSuccessStatusCode)
+            {
+                return Result<GeolocationDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            
+            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(content);
 
-            var json = await response.Content.ReadAsStringAsync();
-            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(json);
-            return new Geolocation(locations[0].Lat, locations[0].Lon);
+            var location = new GeolocationDto(locations[0].Lat, locations[0].Lon);
+            
+            return Result<GeolocationDto>.Success(location);
         }
         catch (HttpRequestException ex)
         {
-            throw new WeatherApiException("Failed to fetch weather data from OpenWeather.", ex);
+            throw new WeatherApiException("Failed to fetch location data from OpenWeather.", ex);
         }
         catch (Exception ex)
         {

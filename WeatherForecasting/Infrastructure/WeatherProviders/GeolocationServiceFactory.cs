@@ -5,7 +5,6 @@ using WeatherForecasting.Domain.Enums;
 using WeatherForecasting.Infrastructure.Decorators;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
-using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders;
@@ -26,13 +25,13 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
         _serviceProvider = serviceProvider;
     }
     
-    public IGeocodingServiceClient GetGeolocationServiceClient(WeatherProvider provider)
+    public IGeocodingServiceClient GetGeolocationServiceClient(WeatherProviderType provider)
     {
         
         IGeocodingServiceClient baseServiceClient = provider switch
         {
-            WeatherProvider.OpenWeather => _serviceProvider.GetRequiredService<OpenWeatherGeocodingServiceClient>(),
-            WeatherProvider.Weatherstack => _serviceProvider.GetRequiredService<WeatherstackGeocodingServiceClient>(),
+            WeatherProviderType.OpenWeather => _serviceProvider.GetRequiredService<OpenWeatherGeocodingServiceClient>(),
+            WeatherProviderType.Weatherstack => _serviceProvider.GetRequiredService<WeatherstackGeocodingServiceClient>(),
             _ => throw new ArgumentOutOfRangeException()
         };
 

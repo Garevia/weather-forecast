@@ -4,7 +4,7 @@ public static class OpenWeatherApiEndpoints
 {
     public const string CurrentWeatherByCity = "/data/2.5/weather?q={0},{1}&units=metric&appid={2}";
 
-    public const string CurrentWeatherByLongitudeAndLattitude =
+    public const string CurrentWeatherByLongitudeAndLatitude =
         "/data/2.5/weather?lat={0}&lon={1}&units=metric&appid={2}";
     
     public const string Forecast5Day = "/data/2.5/forecast?lat={0}&lon={1}&units=metric&appid={2}";

@@ -1,8 +1,8 @@
-namespace WeatherForecasting.Application.Weather.DTO;
+namespace WeatherForecasting.Application.DTO;
 
 public class GeolocationDto
 {
-    public double Lattitude { get; set; }
+    public double Latitude { get; set; }
 
-    public double Longittude { get; set; }
+    public double Longitude { get; set; }
 }

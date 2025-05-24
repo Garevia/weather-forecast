@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.Common;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.Utilities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
@@ -25,7 +25,7 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         _httpClient = httpClient;
     }
 
-    public async Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
+    public async Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country)
     {
         try
         {
@@ -34,15 +34,26 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             
             var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByCity, city, country, _apiKey);
 
-            var response = await _httpClient.GetStringAsync(url);
-            
-            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
+            var response = await _httpClient.GetAsync(url);
 
-            return new WeatherForecast(
-                forecast.name,
-                forecast.weather[0].Description,  
-                (decimal)forecast.main.Temperature, 
-                TimeHelper.FromUnixTimeSeconds(forecast.dt));
+            if (!response.IsSuccessStatusCode)
+            {
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+
+            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(content);
+
+            var weather = new WeatherDto()
+            {
+                City = forecast.name,
+                CountryCode = forecast.System.Country,
+                Description = forecast.weather[0].Description,
+                TemperatureCelsius = (decimal)forecast.main.Temperature,
+                Date = TimeHelper.FromUnixTimeSeconds(forecast.dt)
+            };
+            
+            return Result<WeatherDto>.Success(weather);
         }
         catch (HttpRequestException ex)
         {
@@ -56,28 +67,38 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         }
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode)
+    public async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
         try
         {
             var url = string.Format(OpenWeatherApiEndpoints.Forecast5DayByCity, city, countryCode,
                 _apiKey);
 
-            var response = await _httpClient.GetStringAsync(url);
+            var response = await _httpClient.GetAsync(url);
 
-            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
-
-            var result = new WeatherForecastForFiveDays
+            if (!response.IsSuccessStatusCode)
             {
-                CountryCode = countryCode ,
+                return Result<WeatherForFiveDaysDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            
+            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(content);
+
+            var weather = new WeatherForFiveDaysDto()
+            {
                 City = city,
-                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
-                    x.Weather[0].Description,  
-                    (decimal)x.Main.Temperature, 
-                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
+                CountryCode = countryCode,
+                Forecasts = forecast.list.Select(x => new WeatherDto()
+                {
+                    City = forecast.City.Name,
+                    CountryCode = forecast.City.Country,
+                    Description = x.Weather[0].Description,
+                    TemperatureCelsius = (decimal)x.Main.Temperature,
+                    Date = TimeHelper.FromUnixTimeSeconds(x.Timestamp)
+                }).ToList(),
             };
             
-            return result;
+            return Result<WeatherForFiveDaysDto>.Success(weather);
         }
         catch (HttpRequestException ex)
         {
@@ -91,21 +112,32 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         }
     }
     
-    public async Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
+    public async Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
     {
         try
         {
-            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByLongitudeAndLattitude, latitude, longitude,
+            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByLongitudeAndLatitude, latitude, longitude,
                 _apiKey);
 
-            var response = await _httpClient.GetStringAsync(url);
+            var response = await _httpClient.GetAsync(url);
 
-            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
-            return new WeatherForecast(
-                forecast.name, 
-                forecast.weather[0].Description,  
-                (decimal)forecast.main.Temperature, 
-                TimeHelper.FromUnixTimeSeconds(forecast.dt));
+            if (!response.IsSuccessStatusCode)
+            {
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            
+            var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(content);
+            var weather = new WeatherDto()
+            {
+                City = forecast.name,
+                CountryCode = forecast.System.Country,
+                Description = forecast.weather[0].Description,
+                TemperatureCelsius = (decimal)forecast.main.Temperature,
+                Date = TimeHelper.FromUnixTimeSeconds(forecast.dt)
+            };
+            
+            return Result<WeatherDto>.Success(weather);
         }
         catch (HttpRequestException ex)
         {
@@ -119,28 +151,38 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         }
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
+    public async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
     {
         try
         {
             var url = string.Format(OpenWeatherApiEndpoints.Forecast5Day, latitude, longitude,
                 _apiKey);
 
-            var response = await _httpClient.GetStringAsync(url);
+            var response = await _httpClient.GetAsync(url);
 
-            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(response);
-
-            var result = new WeatherForecastForFiveDays
+            if (!response.IsSuccessStatusCode)
             {
-                CountryCode = forecast.City.Country,
+                return Result<WeatherForFiveDaysDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            
+            var forecast = JsonSerializer.Deserialize<OpenWeatherForecastResponse>(content);
+
+            var weather = new WeatherForFiveDaysDto()
+            {
                 City = forecast.City.Name,
-                Forecasts = forecast.list.Select(x => new WeatherForecast(forecast.City.Name, 
-                    x.Weather[0].Description,  
-                    (decimal)x.Main.Temperature, 
-                    TimeHelper.FromUnixTimeSeconds(x.Timestamp))).ToList(),
+                CountryCode = forecast.City.Country,
+                Forecasts = forecast.list.Select(x => new WeatherDto()
+                {
+                    City = forecast.City.Country,
+                    CountryCode = forecast.City.Country,
+                    Description = x.Weather[0].Description,
+                    TemperatureCelsius = (decimal)x.Main.Temperature,
+                    Date = TimeHelper.FromUnixTimeSeconds(x.Timestamp)
+                }).ToList(),
             };
             
-            return result;
+            return Result<WeatherForFiveDaysDto>.Success(weather);
         }
         catch (HttpRequestException ex)
         {

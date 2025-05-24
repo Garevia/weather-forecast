@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.Common.Helpers;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
-using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
 namespace WeatherForecasting.Infrastructure.Decorators;
 
@@ -27,7 +27,7 @@ public class GeolocationServiceClientCachingDecorator : IGeocodingServiceClient
                               throw new ArgumentNullException("OpenWeatherMap redis API  is not configured");
     }
     
-    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
+    public async Task<Result<GeolocationDto>> ResolveCoordinatesAsync(string city, string countryCode)
     {
         var cacheKey = $"geolocation:{city}:{countryCode}";
 

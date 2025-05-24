@@ -1,3 +1,5 @@
+using WeatherForecasting.Application.DTO;
+
 namespace WeatherForecasting.Application.Weather.DTO;
 
 public class WeatherForecastsDto

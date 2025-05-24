@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.Common.Helpers;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
-using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
 namespace WeatherForecasting.Infrastructure.Decorators;
 
@@ -27,7 +27,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
                               throw new ArgumentNullException("OpenWeatherMap redis API  is not configured");
     }
     
-    public  async Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
+    public  async Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country)
     {
         var cacheKey = $"weather:{city}:{country}";
 
@@ -39,7 +39,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
             _logger);
     }
 
-    public  async Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
+    public  async Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
     {
         var cacheKey = $"weather:{longitude}:{latitude}";
 
@@ -52,7 +52,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
         
     }
 
-    public  async Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
+    public  async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
     {
         var cacheKey = $"weather:{longitude}:{latitude}";
 
@@ -64,7 +64,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
             _logger);
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode)
+    public async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
         var cacheKey = $"weather:{city}:{countryCode}";
 
@@ -74,6 +74,5 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
             () => _weatherServiceClient.GetFiveDayForecastByCityAsync(city, countryCode),
             _redisCacheDuration,
             _logger);
-        
     }
 }

@@ -1,8 +1,8 @@
-namespace WeatherForecasting.Domain.Entities;
+namespace WeatherForecasting.Infrastructure.DTO;
 
-public class Geolocation
+public class GeolocationDto
 {
-    public Geolocation(double latitude, double longitude)
+    public GeolocationDto(double latitude, double longitude)
     {
         this.Latitude = latitude;
         this.Longitude = longitude;

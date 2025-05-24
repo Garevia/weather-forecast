@@ -1,8 +1,9 @@
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
+using WeatherForecasting.Infrastructure.DTO;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 public interface IGeocodingServiceClient
 {
-    Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode);
+    Task<Result<GeolocationDto>> ResolveCoordinatesAsync(string city, string countryCode);
 }

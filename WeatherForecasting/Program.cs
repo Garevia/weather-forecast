@@ -6,7 +6,6 @@ using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Application.Services;
 using WeatherForecasting.Application.Validators;
 using WeatherForecasting.Controllers.Middleware;
-using WeatherForecasting.Infrastructure.Decorators;
 using WeatherForecasting.Infrastructure.WeatherProviders;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
@@ -22,21 +21,17 @@ builder.Services.AddControllers();
 // Register real services
 builder.Services.AddTransient<OpenWeatherMapServiceClient>();
 builder.Services.AddSingleton<WeatherstackServiceClient>();
-builder.Services.AddSingleton<OpenWeatherGeocodingServiceClient>();
-builder.Services.AddSingleton<WeatherstackGeocodingServiceClient>();
+builder.Services.AddTransient<WeatherstackGeocodingServiceClient>();
 
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();
 builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
 
-builder.Services.AddTransient<IGeocodingServiceClient, OpenWeatherGeocodingServiceClient>();
-builder.Services.AddTransient<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
-builder.Services.AddTransient<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
-builder.Services.AddTransient<GeolocationServiceClientCachingDecorator>();
-builder.Services.AddTransient<GeolocationServiceClientLoggingDecorator>();
+builder.Services.AddTransient<OpenWeatherGeocodingServiceClient>();
+builder.Services.AddTransient<WeatherstackGeocodingServiceClient>();
 
 builder.Services.AddTransient<IWeatherService, WeatherService>();
-builder.Services.AddTransient<IGeocodingService, GeocodingService>();
+builder.Services.AddTransient<GeocodingService>();
 
 RegisterMediator(builder);
 

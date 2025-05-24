@@ -1,24 +1,36 @@
 using MediatR;
+using WeatherForecasting.Application.DTO;
 using WeatherForecasting.Application.Interfaces;
-using WeatherForecasting.Application.Mappers;
-using WeatherForecasting.Application.Weather.DTO;
+using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
-public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecastByCityQuery, WeatherForecastDto>
+public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecastByCityQuery, Result<WeatherForecastDto>>
 {
-    private readonly IWeatherServiceFactory _weatherServiceFactory;
+    private readonly IWeatherService _weatherService;
 
-    public GetWeatherForecastByCityHandler(IWeatherServiceFactory weatherServiceFactory)
+    public GetWeatherForecastByCityHandler(IWeatherService weatherService)
     {
-        _weatherServiceFactory = weatherServiceFactory;
+        _weatherService = weatherService;
     }
 
-    public async Task<WeatherForecastDto> Handle(GetWeatherForecastByCityQuery request, CancellationToken cancellationToken)
+    public async Task<Result<WeatherForecastDto>> Handle(GetWeatherForecastByCityQuery request, CancellationToken cancellationToken)
     {
-        var weatherService = _weatherServiceFactory.GetWeatherServiceClient(request.Provider);
-        var response = await weatherService.GetWeatherForecastByCityAsync(request.City, request.CountryCode);
+        var result = await _weatherService.GetWeatherForecastByCityAsync(request.City, request.CountryCode, request.Provider);
+
+        if (!result.IsSuccess)
+            return Result<WeatherForecastDto>.Failure(result.Error);
+
+        var forecast = result.Value;
         
-        return OpenWeatherMapper.ToDomain(response);;
+        return Result<WeatherForecastDto>.Success(new WeatherForecastDto
+        {
+            City = forecast.City,
+            CountryCode = forecast.CountryCode,
+            TemperatureCelsius = forecast.TemperatureCelsius,
+            DateTime = forecast.DateTime,
+            WeatherProvider = request.Provider,
+            Description = forecast.Description
+        });
     }
 }

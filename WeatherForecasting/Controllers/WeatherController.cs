@@ -17,7 +17,7 @@ public class WeatherController : ControllerBase
     }
 
     [HttpGet("by-city/{provider}/{city}/{countryCode}")]
-    public async Task<IActionResult> GetForecastByCityAsync(WeatherProvider provider, string city, string countryCode)
+    public async Task<IActionResult> GetForecastByCityAsync(WeatherProviderType provider, string city, string countryCode)
     {
         var query = new GetWeatherForecastByCityQuery(city, countryCode, provider);
         try
@@ -36,7 +36,7 @@ public class WeatherController : ControllerBase
     }
     
     [HttpGet("by-long-lat/{provider}/{lon}/{lat}")]
-    public async Task<IActionResult> GetForecastByLonAndLatAsync(WeatherProvider provider, double lon, double lat)
+    public async Task<IActionResult> GetForecastByLonAndLatAsync(WeatherProviderType provider, double lon, double lat)
     {
         var query = new GetWeatherForecastByLonAndLatQuery(lon, lat, provider);
         try
@@ -55,9 +55,9 @@ public class WeatherController : ControllerBase
     }
     
     [HttpGet("for-five-days-by-long-lat/{provider}/{lon}/{lat}")]
-    public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProvider provider, double lon, double lat)
+    public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProviderType provider, double lon, double lat)
     {
-        var query = new GetWeatherForecastForFiveDaysByLonAndLatQuery(lon, lat, provider);
+        var query = new GetWeatherForecastForFiveDaysByLonAndLatQuery(lat, lon, provider);
         try
         {
             var service = await _mediator.Send(query);
@@ -74,7 +74,7 @@ public class WeatherController : ControllerBase
     }
     
     [HttpGet("for-five-days-by-city/{provider}/{city}/{countryCode}")]
-    public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProvider provider, string city, string countryCode)
+    public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProviderType provider, string city, string countryCode)
     {
         var query = new GetWeatherForecastForFiveDaysByCityQuery(city, countryCode, provider);
         try
@@ -93,7 +93,7 @@ public class WeatherController : ControllerBase
     }
     
     [HttpGet("get-geocoding/{provider}/{city}/{countryCode}")]
-    public async Task<IActionResult> GetGeocodingAsync(WeatherProvider provider, string city, string countryCode)
+    public async Task<IActionResult> GetGeocodingAsync(WeatherProviderType provider, string city, string countryCode)
     {
         var query = new GetGeocodingQuery(city, countryCode, provider);
         try

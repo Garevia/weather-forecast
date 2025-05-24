@@ -1,4 +1,5 @@
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 namespace WeatherForecasting.Infrastructure.Decorators;
@@ -16,7 +17,7 @@ public class GeolocationServiceClientLoggingDecorator : IGeocodingServiceClient
         _logger = logger;
     }
     
-    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
+    public async Task<Result<GeolocationDto>> ResolveCoordinatesAsync(string city, string countryCode)
     {
         _logger.LogInformation("Requesting location for {City} at {Country}", city, countryCode);
 

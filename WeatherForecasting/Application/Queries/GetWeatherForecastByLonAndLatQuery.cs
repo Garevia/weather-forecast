@@ -1,7 +1,8 @@
 using MediatR;
-using WeatherForecasting.Application.Weather.DTO;
+using WeatherForecasting.Application.DTO;
+using WeatherForecasting.Common;
 using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Queries;
 
-public record GetWeatherForecastByLonAndLatQuery(double Longitude, double Latitude, WeatherProvider Provider) : IRequest<WeatherForecastDto>;
+public record GetWeatherForecastByLonAndLatQuery(double Longitude, double Latitude, WeatherProviderType Provider) : IRequest<Result<WeatherForecastDto>>;

@@ -1,25 +1,35 @@
 using MediatR;
+using WeatherForecasting.Application.DTO;
 using WeatherForecasting.Application.Interfaces;
-using WeatherForecasting.Application.Mappers;
-using WeatherForecasting.Application.Weather.DTO;
+using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
-public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherForecastByLonAndLatQuery, WeatherForecastDto>
+public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherForecastByLonAndLatQuery, Result<WeatherForecastDto>>
 {
-    private readonly IWeatherServiceFactory _weatherServiceFactory;
+    private readonly IWeatherService _weatherService;
 
-    public GetWeatherForecastByLonAndLatHandler(IWeatherServiceFactory weatherServiceFactory)
+    public GetWeatherForecastByLonAndLatHandler(IWeatherService weatherService)
     {
-        _weatherServiceFactory = weatherServiceFactory;
+        _weatherService = weatherService;
     }
-
-    public async Task<WeatherForecastDto> Handle(GetWeatherForecastByLonAndLatQuery request, CancellationToken cancellationToken)
+    public async Task<Result<WeatherForecastDto>> Handle(GetWeatherForecastByLonAndLatQuery request, CancellationToken cancellationToken)
     {
-        var weatherService = _weatherServiceFactory.GetWeatherServiceClient(request.Provider);
+        var result = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude, request.Provider);
 
-        var response = await weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude);
-        
-        return OpenWeatherMapper.ToDomain(response);;
+        if (!result.IsSuccess)
+            return Result<WeatherForecastDto>.Failure(result.Error);
+
+        var forecast = result.Value;
+
+        return Result<WeatherForecastDto>.Success(new WeatherForecastDto
+        {
+            City = forecast.City,
+            CountryCode = forecast.CountryCode,
+            TemperatureCelsius = forecast.TemperatureCelsius,
+            DateTime = forecast.DateTime,
+            WeatherProvider = request.Provider,
+            Description = forecast.Description
+        });
     }
 }

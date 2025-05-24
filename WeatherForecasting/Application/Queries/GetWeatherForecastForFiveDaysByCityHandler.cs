@@ -1,27 +1,43 @@
 using MediatR;
+using WeatherForecasting.Application.DTO;
 using WeatherForecasting.Application.Interfaces;
-using WeatherForecasting.Application.Mappers;
 using WeatherForecasting.Application.Weather.DTO;
+using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
 public class GetWeatherForecastForFiveDaysByCityHandler : IRequestHandler<GetWeatherForecastForFiveDaysByCityQuery,
-    WeatherForecastForFiveDaysDto>
+    Result<WeatherForecastForFiveDaysDto>>
 {
-    private readonly IWeatherServiceFactory _weatherServiceFactory;
+    private readonly IWeatherService _weatherService;
 
-    public GetWeatherForecastForFiveDaysByCityHandler(IWeatherServiceFactory weatherServiceFactory)
+    public GetWeatherForecastForFiveDaysByCityHandler(IWeatherService weatherService)
     {
-        _weatherServiceFactory = weatherServiceFactory;
+        _weatherService = weatherService;
     }
 
-    public async Task<WeatherForecastForFiveDaysDto> Handle(GetWeatherForecastForFiveDaysByCityQuery request,
+    public async Task<Result<WeatherForecastForFiveDaysDto>> Handle(GetWeatherForecastForFiveDaysByCityQuery request,
         CancellationToken cancellationToken)
     {
-        var weatherService = _weatherServiceFactory.GetWeatherServiceClient(request.Provider);
+        var result =
+            await _weatherService.GetFiveDayForecastsByCityAsync(request.City, request.CountryCode, request.Provider);
 
-        var response = await weatherService.GetFiveDayForecastByCityAsync(request.City, request.CountryCode);
+        if (!result.IsSuccess)
+            return Result<WeatherForecastForFiveDaysDto>.Failure(result.Error);
 
-        return OpenWeatherMapper.ToDomain(response);
+        var forecast = result.Value;
+
+        return Result<WeatherForecastForFiveDaysDto>.Success(new WeatherForecastForFiveDaysDto
+        {
+            City = forecast.City,
+            CountryCode = forecast.CountryCode,
+            Provider = request.Provider,
+            Forecasts = forecast.Forecasts.Select(x => new WeatherForecastForTimeStampDto()
+            {
+                TemperatureCelsius = x.TemperatureCelsius,
+                DateTime = x.DateTime,
+                Description = x.Description
+            })
+        });
     }
 }

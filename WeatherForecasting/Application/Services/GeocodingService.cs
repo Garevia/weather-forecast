@@ -1,20 +1,31 @@
 using WeatherForecasting.Application.Interfaces;
+using WeatherForecasting.Common;
 using WeatherForecasting.Domain.Entities;
-using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Services;
 
 public class GeocodingService : IGeocodingService
 {
-    private readonly IGeocodingServiceClient _geocodingServiceClient;
+    private readonly IGeolocationServiceFactory _serviceFactory;
 
-    public GeocodingService(IGeocodingServiceClient geocodingServiceClient)
+    public GeocodingService(IGeolocationServiceFactory serviceFactory)
     {
-        this._geocodingServiceClient = geocodingServiceClient;
+        _serviceFactory = serviceFactory;
     }
     
-    public async Task<Geolocation> ResolveCoordinatesAsync(string city, string countryCode)
+    public async Task<Result<Geolocation>> ResolveCoordinatesAsync(string city, string countryCode, WeatherProviderType provider)
     {
-        return await _geocodingServiceClient.ResolveCoordinatesAsync(city, countryCode);
+        var service = _serviceFactory.GetGeolocationServiceClient(provider);
+        
+        var dtoResult = await service.ResolveCoordinatesAsync(city, countryCode);
+
+        if (!dtoResult.IsSuccess)
+            return Result<Geolocation>.Failure(dtoResult.Error);
+
+        var dto = dtoResult.Value;
+        var forecast = new Geolocation(dtoResult.Value.Latitude, dtoResult.Value.Longitude);
+
+        return Result<Geolocation>.Success(forecast);
     }
 }

@@ -1,6 +1,6 @@
 namespace WeatherForecasting.Domain.Enums;
 
-public enum WeatherProvider
+public enum WeatherProviderType
 {
     OpenWeather,
     Weatherstack,

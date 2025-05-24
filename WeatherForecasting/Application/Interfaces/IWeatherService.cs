@@ -1,14 +1,16 @@
+using WeatherForecasting.Common;
 using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Interfaces;
 
 public interface IWeatherService
 {
-    Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country);
+    Task<Result<WeatherForecast>> GetWeatherForecastByCityAsync(string city, string countryCode, WeatherProviderType provider);
     
-    Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat);
+    Task<Result<WeatherForecast>> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude, WeatherProviderType provider);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastsAsync(double lon, double lat);
+    Task<Result<WeatherForecastForFiveDays>> GetFiveDayForecastsByLonAndLanAsync(double longitude, double latitude, WeatherProviderType provider);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastsAsync(string city, string country);
+    Task<Result<WeatherForecastForFiveDays>> GetFiveDayForecastsByCityAsync(string city, string countryCode, WeatherProviderType provider);
 }

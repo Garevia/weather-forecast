@@ -1,14 +1,15 @@
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
+using WeatherForecasting.Infrastructure.DTO;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 public interface IWeatherServiceClient
 {
-    Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country);
+    Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country);
     
-    Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat);
+    Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double lon, double lat);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double lon, double lat);
+    Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude);
     
-    Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode);
+    Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode);
 }

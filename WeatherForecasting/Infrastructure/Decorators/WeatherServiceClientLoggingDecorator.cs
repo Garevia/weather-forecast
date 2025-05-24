@@ -1,4 +1,5 @@
-using WeatherForecasting.Domain.Entities;
+using WeatherForecasting.Common;
+using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 namespace WeatherForecasting.Infrastructure.Decorators;
@@ -16,7 +17,7 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         _logger = logger;
     }
 
-    public async Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
+    public async Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country)
     {
         _logger.LogInformation("Requesting weather for {City} at {Country}", city, country);
 
@@ -24,7 +25,6 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         {
             var result = await _weatherServiceClient.GetWeatherForecastByCityAsync(city, country);
 
-            _logger.LogInformation("Weather received: {Temp}°C, {Description}", result.TemperatureCelsius, result.Description);
             return result;
         }
         catch (Exception ex)
@@ -34,7 +34,7 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         }
     }
 
-    public  async Task<WeatherForecast> GetWeatherForecastByLonAndLanAsync(double lon, double lat)
+    public  async Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double lon, double lat)
     {
         _logger.LogInformation("Requesting weather for {long} and {lat}", lon, lat);
 
@@ -42,7 +42,6 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         {
             var result = await _weatherServiceClient.GetWeatherForecastByLonAndLanAsync(lon, lat);
 
-            _logger.LogInformation("Weather received: {Temp}°C, {Description}", result.TemperatureCelsius, result.Description);
             return result;
         }
         catch (Exception ex)
@@ -52,7 +51,7 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         }
     }
 
-    public  async Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double lon, double lat)
+    public  async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double lon, double lat)
     {
         _logger.LogInformation("Requesting weather for {long} and {lat}", lon, lat);
 
@@ -69,7 +68,7 @@ public class WeatherServiceClientLoggingDecorator : IWeatherServiceClient
         }    
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode)
+    public async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
         _logger.LogInformation("Requesting weather for {city} and {countryCode}", city, countryCode);
 
