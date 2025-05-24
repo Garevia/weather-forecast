@@ -23,7 +23,7 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
     {
         try
         {
-            var url = string.Format(WeatherApiEndpoints.GeocodingDirect, city, countryCode,
+            var url = string.Format(OpenWeatherApiEndpoints.GeocodingDirect, city, countryCode,
                 _apiKey);
 
             var response = await _httpClient.GetAsync(url);
@@ -31,7 +31,7 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
 
 
             var json = await response.Content.ReadAsStringAsync();
-            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocation>>(json);
+            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(json);
             return new Geolocation(locations[0].Lat, locations[0].Lon);
         }
         catch (HttpRequestException ex)

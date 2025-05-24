@@ -14,21 +14,15 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
     private readonly HttpClient _httpClient;
     private readonly ILogger<OpenWeatherMapServiceClient> _logger;
     private readonly string _apiKey;
-    private readonly TimeSpan _redisCacheDuration;
-    private readonly IDatabase _redisDb;
 
     public OpenWeatherMapServiceClient(HttpClient httpClient, 
         ILogger<OpenWeatherMapServiceClient> logger, 
-        IOptions<WeatherApiOptions> options,
-        IOptions<RedisOptions> redisOptions,
-        ConnectionMultiplexer redis)
+        IOptions<WeatherApiOptions> options)
     {
         _logger = logger;
         _apiKey = options.Value.ApiKey
                   ?? throw new ArgumentNullException("OpenWeatherMap API key is not configured");
         _httpClient = httpClient;
-        _redisDb = redis.GetDatabase();
-
     }
 
     public async Task<WeatherForecast> GetWeatherForecastByCityAsync(string city, string country)
@@ -38,25 +32,11 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             if (string.IsNullOrWhiteSpace(city)) throw new ArgumentException("City name is required");
             if (string.IsNullOrWhiteSpace(country)) throw new ArgumentException("Country code is required");
             
-            string cacheKey = $"weather:{city}{country}";
-            var cachedData = await _redisDb.StringGetAsync(cacheKey);
-            if (cachedData.HasValue)
-            {
-                var cachedForecast = JsonSerializer.Deserialize<OpenWeatherResponse>(cachedData);
-            
-                return new WeatherForecast(
-                    cachedForecast.name,
-                    cachedForecast.weather[0].Description,  
-                    (decimal)cachedForecast.main.Temperature, 
-                    TimeHelper.FromUnixTimeSeconds(cachedForecast.dt));
-            }
-            
-            var url = string.Format(WeatherApiEndpoints.CurrentWeatherByCity, city, country, _apiKey);
+            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByCity, city, country, _apiKey);
 
             var response = await _httpClient.GetStringAsync(url);
             
             var forecast = JsonSerializer.Deserialize<OpenWeatherResponse>(response);
-            await _redisDb.StringSetAsync(cacheKey, response, _redisCacheDuration);
 
             return new WeatherForecast(
                 forecast.name,
@@ -76,11 +56,11 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         }
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(string city, string countryCode)
+    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
         try
         {
-            var url = string.Format(WeatherApiEndpoints.Forecast5DayByCity, city, countryCode,
+            var url = string.Format(OpenWeatherApiEndpoints.Forecast5DayByCity, city, countryCode,
                 _apiKey);
 
             var response = await _httpClient.GetStringAsync(url);
@@ -115,7 +95,7 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
     {
         try
         {
-            var url = string.Format(WeatherApiEndpoints.CurrentWeatherByLongitudeAndLattitude, latitude, longitude,
+            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByLongitudeAndLattitude, latitude, longitude,
                 _apiKey);
 
             var response = await _httpClient.GetStringAsync(url);
@@ -139,11 +119,11 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
         }
     }
 
-    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastAsync(double longitude, double latitude)
+    public async Task<WeatherForecastForFiveDays> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
     {
         try
         {
-            var url = string.Format(WeatherApiEndpoints.Forecast5Day, latitude, longitude,
+            var url = string.Format(OpenWeatherApiEndpoints.Forecast5Day, latitude, longitude,
                 _apiKey);
 
             var response = await _httpClient.GetStringAsync(url);

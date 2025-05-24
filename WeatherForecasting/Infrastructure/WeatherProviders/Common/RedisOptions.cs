@@ -1,4 +1,4 @@
-namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
+namespace WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 public class RedisOptions
 {

@@ -6,6 +6,7 @@ using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Application.Services;
 using WeatherForecasting.Application.Validators;
 using WeatherForecasting.Controllers.Middleware;
+using WeatherForecasting.Infrastructure.Decorators;
 using WeatherForecasting.Infrastructure.WeatherProviders;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
@@ -27,10 +28,13 @@ builder.Services.AddSingleton<WeatherstackGeocodingServiceClient>();
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();
 builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
-builder.Services.AddSingleton<IGeolocationServiceFactory, GeolocationServiceFactory>();
 
 builder.Services.AddTransient<IGeocodingServiceClient, OpenWeatherGeocodingServiceClient>();
 builder.Services.AddTransient<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
+builder.Services.AddTransient<IGeocodingServiceClient, WeatherstackGeocodingServiceClient>();
+builder.Services.AddTransient<GeolocationServiceClientCachingDecorator>();
+builder.Services.AddTransient<GeolocationServiceClientLoggingDecorator>();
+
 builder.Services.AddTransient<IWeatherService, WeatherService>();
 builder.Services.AddTransient<IGeocodingService, GeocodingService>();
 
