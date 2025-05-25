@@ -57,11 +57,15 @@ dotnet run
 docker-compose up --build
 ```
 
-# Stop containers without removing them
+### 🔧 Stop containers without removing them
+```bash
 docker-compose stop
+```
 
-# Or stop and remove containers
+### 🔧 Or stop and remove containers
+```bash
 docker-compose down
+```
 
 ### Access Swagger
 
