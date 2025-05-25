@@ -39,10 +39,8 @@ RegisterMediator(builder);
 builder.Services.Configure<OpenMapWeatherApiOptions>(
     builder.Configuration.GetSection("OpenWeatherMap"));
 
-
 builder.Services.Configure<WeatherstackWeatherApiOptions>(
     builder.Configuration.GetSection("Weatherstack"));
-
 
 builder.Services.Configure<RedisOptions>(
     builder.Configuration.GetSection("Redis"));
@@ -75,14 +73,11 @@ builder.Services.AddHttpClient<WeatherstackGeocodingServiceClient>((provider, cl
     client.BaseAddress = new Uri(options.BaseUrl);
 });
 
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+var redisConnection = builder.Configuration.GetValue<string>("Redis:Connection");
 
 // Register the Redis connection multiplexer as a singleton
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(redisConnectionString));
-
-var redis = ConnectionMultiplexer.Connect("localhost:6379");
-builder.Services.AddSingleton(redis);
+    ConnectionMultiplexer.Connect(redisConnection));
 
 builder.Services.AddSingleton<IWeatherServiceClient, OpenWeatherMapServiceClient>();
 

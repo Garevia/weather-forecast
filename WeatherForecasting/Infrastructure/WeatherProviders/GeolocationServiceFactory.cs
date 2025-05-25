@@ -13,12 +13,12 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<RedisOptions> _redisOptions;
-    private readonly ConnectionMultiplexer _redisDb;
+    private readonly IConnectionMultiplexer _redisDb;
     
     public GeolocationServiceFactory(
         IServiceProvider serviceProvider,
         IOptions<RedisOptions> redisOptions,
-        ConnectionMultiplexer redisDb)
+        IConnectionMultiplexer redisDb)
     {
         _redisDb = redisDb;
         _redisOptions = redisOptions;

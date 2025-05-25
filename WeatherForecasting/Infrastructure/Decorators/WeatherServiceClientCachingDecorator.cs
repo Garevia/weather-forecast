@@ -19,7 +19,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
     public WeatherServiceClientCachingDecorator(
         IWeatherServiceClient weatherServiceClient,
         IOptions<RedisOptions> redisOptions,
-        ConnectionMultiplexer redisDb,
+        IConnectionMultiplexer redisDb,
         ILogger<WeatherServiceClientCachingDecorator> logger,
         WeatherProviderType providerType)
     {

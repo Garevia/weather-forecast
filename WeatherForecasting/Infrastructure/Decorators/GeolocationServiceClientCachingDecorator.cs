@@ -19,7 +19,7 @@ public class GeolocationServiceClientCachingDecorator : IGeocodingServiceClient
     public GeolocationServiceClientCachingDecorator(
         IGeocodingServiceClient geocodingServiceClient,
         IOptions<RedisOptions> redisOptions,
-        ConnectionMultiplexer redisDb,
+        IConnectionMultiplexer redisDb,
         ILogger<GeolocationServiceClientCachingDecorator> logger,
         WeatherProviderType providerType)
     {
