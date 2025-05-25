@@ -22,7 +22,7 @@ public class WeatherstackServiceClient : IWeatherServiceClient
     {
         _logger = logger;
         _apiKey = options.Value.ApiKey
-                  ?? throw new ArgumentNullException("OpenWeatherMap API key is not configured");
+                  ?? throw new ArgumentNullException("Weatherstack API key is not configured");
         _httpClient = httpClient;
     }
 
@@ -102,11 +102,13 @@ public class WeatherstackServiceClient : IWeatherServiceClient
 
     public Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double lon, double lat)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Result<WeatherForFiveDaysDto>.Failure("Method not supported for provider WeatherStack",
+            HttpStatusCode.Forbidden));
     }
 
     public Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Result<WeatherForFiveDaysDto>.Failure("Method not supported for provider WeatherStack",
+            HttpStatusCode.Forbidden));
     }
 }

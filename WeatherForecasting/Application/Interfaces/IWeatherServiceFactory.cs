@@ -8,7 +8,6 @@ namespace WeatherForecasting.Application.Interfaces;
 /// </summary>
 public interface IWeatherServiceFactory
 { 
-    
     /// <summary>
     /// Method for getting appropriate service client
     /// </summary>

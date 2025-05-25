@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.DTO;
@@ -34,9 +35,15 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
             }
             var content = await response.Content.ReadAsStringAsync();
             
-            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(content);
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+            
+            var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(content, options);
 
-            var location = new GeolocationDto(locations[0].Lat, locations[0].Lon);
+            var location = new GeolocationDto(Math.Round(locations[0].Lat, 7), Math.Round(locations[0].Lon, 7));
             
             return Result<GeolocationDto>.Success(location);
         }

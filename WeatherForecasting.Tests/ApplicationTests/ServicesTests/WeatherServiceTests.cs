@@ -4,7 +4,6 @@ using WeatherForecasting.Application.Services;
 using WeatherForecasting.Common;
 using WeatherForecasting.Domain.Enums;
 using WeatherForecasting.Infrastructure.DTO;
-using WeatherForecasting.Infrastructure.WeatherProviders;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
 namespace WeatherForecasting.Tests.ApplicationTests.ServicesTests;
