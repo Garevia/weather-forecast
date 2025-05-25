@@ -4,4 +4,5 @@ public enum WeatherProviderType
 {
     OpenWeather,
     Weatherstack,
+    Unknown
 }

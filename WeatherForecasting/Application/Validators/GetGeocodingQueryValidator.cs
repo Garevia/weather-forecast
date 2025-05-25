@@ -1,5 +1,6 @@
 using FluentValidation;
 using WeatherForecasting.Application.Queries;
+using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Validators;
 
@@ -16,6 +17,8 @@ public class GetGeocodingQueryValidator :  AbstractValidator<GetGeocodingQuery>
             .MaximumLength(3);
 
         RuleFor(x => x.Provider)
-            .NotNull().WithMessage("Provider must be provided.");
+            .IsInEnum()
+            .NotEqual(WeatherProviderType.Unknown)
+            .WithMessage("Provider must be provided.");
     }
 }

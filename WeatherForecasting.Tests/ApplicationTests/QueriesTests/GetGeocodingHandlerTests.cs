@@ -61,7 +61,7 @@ public class GetGeocodingHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be("City not found");
+        result.Error.Message.Should().Be("City not found");
     }
 
 }

@@ -17,7 +17,7 @@ public class WeatherController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    [HttpGet("by-city/{provider}/{city}/{countryCode}")]
+    [HttpGet("by-city")]
     public async Task<IActionResult> GetForecastByCityAsync(WeatherProviderType provider, string city,
         string countryCode)
     {
@@ -33,7 +33,7 @@ public class WeatherController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("by-long-lat/{provider}/{lon}/{lat}")]
+    [HttpGet("by-long-lat")]
     public async Task<IActionResult> GetForecastByLonAndLatAsync(WeatherProviderType provider, double lon, double lat)
     {
         var query = new GetWeatherForecastByLonAndLatQuery(lon, lat, provider);
@@ -48,7 +48,7 @@ public class WeatherController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("for-five-days-by-long-lat/{provider}/{lon}/{lat}")]
+    [HttpGet("for-five-days-by-long-lat")]
     public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProviderType provider, double lon,
         double lat)
     {
@@ -64,7 +64,7 @@ public class WeatherController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("for-five-days-by-city/{provider}/{city}/{countryCode}")]
+    [HttpGet("for-five-days-by-city")]
     public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProviderType provider, string city,
         string countryCode)
     {
@@ -80,7 +80,7 @@ public class WeatherController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("get-geocoding/{provider}/{city}/{countryCode}")]
+    [HttpGet("get-geocoding")]
     public async Task<IActionResult> GetGeocodingAsync(WeatherProviderType provider, string city, string countryCode)
     {
         var query = new GetGeocodingQuery(city, countryCode, provider);
