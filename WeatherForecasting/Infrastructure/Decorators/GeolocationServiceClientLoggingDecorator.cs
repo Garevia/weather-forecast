@@ -1,5 +1,4 @@
 using WeatherForecasting.Common;
-using WeatherForecasting.Domain.Enums;
 using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 

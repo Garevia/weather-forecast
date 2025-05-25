@@ -1,5 +1,4 @@
 using FluentValidation;
-using WeatherForecasting.Infrastructure.Common;
 
 namespace WeatherForecasting.Controllers.Middleware;
 

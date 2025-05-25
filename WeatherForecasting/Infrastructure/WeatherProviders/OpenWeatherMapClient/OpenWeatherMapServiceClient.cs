@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using WeatherForecasting.Common;
-using WeatherForecasting.Infrastructure.Common;
 using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.Utilities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
