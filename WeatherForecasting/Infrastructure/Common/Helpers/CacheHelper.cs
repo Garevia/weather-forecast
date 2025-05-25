@@ -4,8 +4,21 @@ using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Infrastructure.Common.Helpers;
 
+/// <summary>
+/// Class for caching
+/// </summary>
 public static class CacheHelper
 {
+    /// <summary>
+    /// This method caches data if it is not cached, if it is cached it retreives the cache
+    /// </summary>
+    /// <param name="cache">Cache provider</param>
+    /// <param name="key">Cache key</param>
+    /// <param name="getData">Function that should be called or not called depending on cache result</param>
+    /// <param name="expiration">Expiration time of the cache</param>
+    /// <param name="logger">logger for logging</param>
+    /// <typeparam name="T">Type of the class that can be cached</typeparam>
+    /// <returns></returns>
     public static async Task<Result<T>> GetOrSetAsync<T>(
         IDatabase cache,
         string key,

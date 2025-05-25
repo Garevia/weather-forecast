@@ -3,6 +3,9 @@ using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.DTO;
 
+/// <summary>
+/// Dto for representing upcoming five days weather
+/// </summary>
 public class WeatherForecastForFiveDaysDto
 { 
     public string City { get; set; }

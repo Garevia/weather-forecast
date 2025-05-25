@@ -27,7 +27,6 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
     
     public IGeocodingServiceClient GetGeolocationServiceClient(WeatherProviderType provider)
     {
-        
         IGeocodingServiceClient baseServiceClient = provider switch
         {
             WeatherProviderType.OpenWeather => _serviceProvider.GetRequiredService<OpenWeatherGeocodingServiceClient>(),

@@ -3,6 +3,10 @@ using WeatherForecasting.Infrastructure.DTO;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.Common;
 
+
+/// <summary>
+/// IWeatherServiceClient  interface that implements 3rd party APIs
+/// </summary>
 public interface IWeatherServiceClient
 {
     Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country);

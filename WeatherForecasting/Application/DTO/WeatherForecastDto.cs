@@ -2,6 +2,9 @@ using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.DTO;
 
+/// <summary>
+/// Dto for representing the weather
+/// </summary>
 public class WeatherForecastDto
 {
     public string City { get; set; }

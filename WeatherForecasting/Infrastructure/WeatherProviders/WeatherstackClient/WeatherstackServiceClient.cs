@@ -1,9 +1,11 @@
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.DTO;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
+using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient.Mapper;
 using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient.Models;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
@@ -28,15 +30,19 @@ public class WeatherstackServiceClient : IWeatherServiceClient
     {
         try
         {
-            var url = string.Format(WeatherstackWeatherApiEndpoints.CurrentWeatherByCity, _apiKey, city, country);
+            var url = string.Format(WeatherstackWeatherApiEndpoints.CurrentWeather, _apiKey, city, country);
 
             var response = await _httpClient.GetAsync(url);
 
+            var content = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
-                return Result<WeatherDto>.Failure($"Error in getting data, error code {response.StatusCode}", response.StatusCode);
+                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
+
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
+                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
             }
-            var content = await response.Content.ReadAsStringAsync();
 
             var forecast = JsonSerializer.Deserialize<WeatherstackCurrentResponse>(content);
 
@@ -57,9 +63,41 @@ public class WeatherstackServiceClient : IWeatherServiceClient
         }
     }
 
-    public Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double lon, double lat)
+    public async Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double lon, double lat)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var url = string.Format(WeatherstackWeatherApiEndpoints.CurrentWeather, _apiKey, lat, lon);
+
+            var response = await _httpClient.GetAsync(url);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
+
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
+                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
+            }
+
+            var forecast = JsonSerializer.Deserialize<WeatherstackCurrentResponse>(content);
+
+            var weather = new WeatherDto()
+            {
+                City = forecast.Location.Name,
+                CountryCode =  forecast.Location.Country,
+                Description = string.Join(",", forecast.Current.WeatherDescriptions),
+                TemperatureCelsius = forecast.Current.Temperature,
+                Date = DateTime.ParseExact(forecast.Location.LocalTime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)
+            };
+            
+            return Result<WeatherDto>.Success(weather);
+        }
+        catch (Exception ex)
+        {
+            return Result<WeatherDto>.Failure("Unexpected error occurred: " + ex.Message);
+        }
     }
 
     public Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double lon, double lat)

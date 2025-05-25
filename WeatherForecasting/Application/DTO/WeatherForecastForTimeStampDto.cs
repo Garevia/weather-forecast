@@ -1,5 +1,8 @@
 namespace WeatherForecasting.Application.Weather.DTO;
 
+/// <summary>
+/// Dto describing the weather by hours
+/// </summary>
 public class WeatherForecastForTimeStampDto
 {
     public string Description { get; set; }
