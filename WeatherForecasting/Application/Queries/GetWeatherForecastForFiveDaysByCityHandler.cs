@@ -23,7 +23,7 @@ public class GetWeatherForecastForFiveDaysByCityHandler : IRequestHandler<GetWea
             await _weatherService.GetFiveDayForecastsByCityAsync(request.City, request.CountryCode, request.Provider);
 
         if (!result.IsSuccess)
-            return Result<WeatherForecastForFiveDaysDto>.Failure(result.Error);
+            return Result<WeatherForecastForFiveDaysDto>.Failure(result.Error.Message, result.Error.HttpStatusCode);
 
         var forecast = result.Value;
 

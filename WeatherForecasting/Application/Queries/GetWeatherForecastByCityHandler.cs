@@ -19,7 +19,7 @@ public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecas
         var result = await _weatherService.GetWeatherForecastByCityAsync(request.City, request.CountryCode, request.Provider);
 
         if (!result.IsSuccess)
-            return Result<WeatherForecastDto>.Failure(result.Error);
+            return Result<WeatherForecastDto>.Failure(result.Error.Message, result.Error.HttpStatusCode);
 
         var forecast = result.Value;
         

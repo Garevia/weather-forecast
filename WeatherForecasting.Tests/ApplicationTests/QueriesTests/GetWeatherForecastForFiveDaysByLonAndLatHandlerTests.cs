@@ -64,6 +64,6 @@ public class GetWeatherForecastForFiveDaysByLonAndLatHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Coordinates not found", result.Error);
+        Assert.Equal("Coordinates not found", result.Error.Message);
     }
 }

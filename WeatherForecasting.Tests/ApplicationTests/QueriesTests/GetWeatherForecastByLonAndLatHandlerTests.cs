@@ -54,6 +54,6 @@ public class GetWeatherForecastByLonAndLatHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Failed to get weather", result.Error);
+        Assert.Equal("Failed to get weather", result.Error.Message);
     }
 }

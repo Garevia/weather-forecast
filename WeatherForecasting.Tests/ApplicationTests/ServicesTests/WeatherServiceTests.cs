@@ -58,7 +58,7 @@ public class WeatherServiceTests
         var result = await _service.GetWeatherForecastByCityAsync("Nowhere", "ZZ", WeatherProviderType.Weatherstack);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("City not found", result.Error);
+        Assert.Equal("City not found", result.Error.Message);
     }
 
     [Fact]
@@ -151,6 +151,6 @@ public class WeatherServiceTests
         var result = await _service.GetFiveDayForecastsByCityAsync("Nowhere", "ZZ", WeatherProviderType.Weatherstack);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("City not found", result.Error);
+        Assert.Equal("City not found", result.Error.Message);
     }
 }

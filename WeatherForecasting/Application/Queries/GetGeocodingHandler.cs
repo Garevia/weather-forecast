@@ -20,7 +20,7 @@ public class GetGeocodingHandler : IRequestHandler<GetGeocodingQuery, Result<Geo
         var result = await geocodingService.ResolveCoordinatesAsync(request.City, request.CountryCode);
 
         if (!result.IsSuccess)
-            return Result<GeolocationDto>.Failure(result.Error);
+            return Result<GeolocationDto>.Failure(result.Error.Message, result.Error.HttpStatusCode);
 
         var location = result.Value;
 

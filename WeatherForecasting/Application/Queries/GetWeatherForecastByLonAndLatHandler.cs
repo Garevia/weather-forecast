@@ -18,7 +18,7 @@ public class GetWeatherForecastByLonAndLatHandler : IRequestHandler<GetWeatherFo
         var result = await _weatherService.GetWeatherForecastByLonAndLanAsync(request.Longitude, request.Latitude, request.Provider);
 
         if (!result.IsSuccess)
-            return Result<WeatherForecastDto>.Failure(result.Error);
+            return Result<WeatherForecastDto>.Failure(result.Error.Message, result.Error.HttpStatusCode);
 
         var forecast = result.Value;
 

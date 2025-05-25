@@ -43,7 +43,8 @@ public class GeolocationServiceFactory : IGeolocationServiceFactory
             loggingDecoratedService, 
             _redisOptions,
             _redisDb,
-            _serviceProvider.GetRequiredService<ILogger<GeolocationServiceClientCachingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<GeolocationServiceClientCachingDecorator>>(),
+            provider);
         
         return cacheDecoratedService;
     }

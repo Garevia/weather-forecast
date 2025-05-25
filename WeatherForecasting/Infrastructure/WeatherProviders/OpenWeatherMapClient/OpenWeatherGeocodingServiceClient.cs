@@ -13,7 +13,7 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
 
-    public OpenWeatherGeocodingServiceClient(HttpClient httpClient, IOptions<WeatherApiOptions> options)
+    public OpenWeatherGeocodingServiceClient(HttpClient httpClient, IOptions<OpenMapWeatherApiOptions> options)
     {
         _httpClient = httpClient;
         _apiKey = options.Value.ApiKey 
@@ -31,7 +31,7 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
 
             if (!response.IsSuccessStatusCode)
             {
-                return Result<GeolocationDto>.Failure($"Error in getting data, error code {response.StatusCode}");
+                return Result<GeolocationDto>.Failure($"Error in getting data, error code {response.StatusCode}", response.StatusCode);
             }
             var content = await response.Content.ReadAsStringAsync();
             
@@ -41,13 +41,9 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
             
             return Result<GeolocationDto>.Success(location);
         }
-        catch (HttpRequestException ex)
-        {
-            throw new WeatherApiException("Failed to fetch location data from OpenWeather.", ex);
-        }
         catch (Exception ex)
         {
-            throw new WeatherApiException("Unexpected error while calling OpenWeather.", ex);
+            return Result<GeolocationDto>.Failure("Unexpected error occurred: " + ex.Message);
         }
     }
 }

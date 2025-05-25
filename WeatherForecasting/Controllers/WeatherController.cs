@@ -1,3 +1,4 @@
+using System.Net;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WeatherForecasting.Application.Queries;
@@ -17,97 +18,80 @@ public class WeatherController : ControllerBase
     }
 
     [HttpGet("by-city/{provider}/{city}/{countryCode}")]
-    public async Task<IActionResult> GetForecastByCityAsync(WeatherProviderType provider, string city, string countryCode)
+    public async Task<IActionResult> GetForecastByCityAsync(WeatherProviderType provider, string city,
+        string countryCode)
     {
         var query = new GetWeatherForecastByCityQuery(city, countryCode, provider);
-        try
+        var result = await _mediator.Send(query);
+        
+        if (!result.IsSuccess)
         {
-            var service = await _mediator.Send(query);
-            return Ok(service);
+            var status = result.Error?.HttpStatusCode ?? HttpStatusCode.BadRequest;
+            return StatusCode((int)status, new { error = result.Error?.Message });
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error.");
-        }
+        
+        return Ok(result);
     }
-    
+
     [HttpGet("by-long-lat/{provider}/{lon}/{lat}")]
     public async Task<IActionResult> GetForecastByLonAndLatAsync(WeatherProviderType provider, double lon, double lat)
     {
         var query = new GetWeatherForecastByLonAndLatQuery(lon, lat, provider);
-        try
+        var result = await _mediator.Send(query);
+        
+        if (!result.IsSuccess)
         {
-            var service = await _mediator.Send(query);
-            return Ok(service);
+            var status = result.Error?.HttpStatusCode ?? HttpStatusCode.BadRequest;
+            return StatusCode((int)status, new { error = result.Error?.Message });
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error.");
-        }
+        
+        return Ok(result);
     }
-    
+
     [HttpGet("for-five-days-by-long-lat/{provider}/{lon}/{lat}")]
-    public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProviderType provider, double lon, double lat)
+    public async Task<IActionResult> GetForecastForFiveDaysByLonAndLatAsync(WeatherProviderType provider, double lon,
+        double lat)
     {
         var query = new GetWeatherForecastForFiveDaysByLonAndLatQuery(lat, lon, provider);
-        try
+        var result = await _mediator.Send(query);
+        
+        if (!result.IsSuccess)
         {
-            var service = await _mediator.Send(query);
-            return Ok(service);
+            var status = result.Error?.HttpStatusCode ?? HttpStatusCode.BadRequest;
+            return StatusCode((int)status, new { error = result.Error?.Message });
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error.");
-        }
+        
+        return Ok(result);
     }
-    
+
     [HttpGet("for-five-days-by-city/{provider}/{city}/{countryCode}")]
-    public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProviderType provider, string city, string countryCode)
+    public async Task<IActionResult> GetForecastForFiveDaysByCityAsync(WeatherProviderType provider, string city,
+        string countryCode)
     {
         var query = new GetWeatherForecastForFiveDaysByCityQuery(city, countryCode, provider);
-        try
+        var result = await _mediator.Send(query);
+        
+        if (!result.IsSuccess)
         {
-            var service = await _mediator.Send(query);
-            return Ok(service);
+            var status = result.Error?.HttpStatusCode ?? HttpStatusCode.BadRequest;
+            return StatusCode((int)status, new { error = result.Error?.Message });
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error.");
-        }
+        
+        return Ok(result);
     }
-    
+
     [HttpGet("get-geocoding/{provider}/{city}/{countryCode}")]
     public async Task<IActionResult> GetGeocodingAsync(WeatherProviderType provider, string city, string countryCode)
     {
         var query = new GetGeocodingQuery(city, countryCode, provider);
-        try
+        var result = await _mediator.Send(query);
+        
+        if (!result.IsSuccess)
         {
-            var service = await _mediator.Send(query);
-            return Ok(service);
+            var status = result.Error?.HttpStatusCode ?? HttpStatusCode.BadRequest;
+            return StatusCode((int)status, new { error = result.Error?.Message });
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error.");
-        }
+
+        return Ok(result);
     }
 }

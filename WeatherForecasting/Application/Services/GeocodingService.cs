@@ -21,7 +21,7 @@ public class GeocodingService : IGeocodingService
         var dtoResult = await service.ResolveCoordinatesAsync(city, countryCode);
 
         if (!dtoResult.IsSuccess)
-            return Result<Geolocation>.Failure(dtoResult.Error);
+            return Result<Geolocation>.Failure(dtoResult.Error.Message, dtoResult.Error.HttpStatusCode);
 
         var dto = dtoResult.Value;
         var forecast = new Geolocation(dtoResult.Value.Latitude, dtoResult.Value.Longitude);

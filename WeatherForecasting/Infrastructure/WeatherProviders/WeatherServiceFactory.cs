@@ -40,7 +40,8 @@ public class WeatherServiceFactory : IWeatherServiceFactory
         var cacheDecoratedService = new WeatherServiceClientCachingDecorator(loggingDecoratedService, 
             _redisOptions,
             _redisDb,
-            _serviceProvider.GetRequiredService<ILogger<WeatherServiceClientCachingDecorator>>());
+            _serviceProvider.GetRequiredService<ILogger<WeatherServiceClientCachingDecorator>>(),
+            provider);
         
         return cacheDecoratedService;
     }

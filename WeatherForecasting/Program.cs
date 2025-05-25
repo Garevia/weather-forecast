@@ -11,6 +11,7 @@ using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 using WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient;
+using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,22 +36,41 @@ builder.Services.AddTransient<GeocodingService>();
 
 RegisterMediator(builder);
 
-builder.Services.Configure<WeatherApiOptions>(
+builder.Services.Configure<OpenMapWeatherApiOptions>(
     builder.Configuration.GetSection("OpenWeatherMap"));
+
+
+builder.Services.Configure<WeatherstackWeatherApiOptions>(
+    builder.Configuration.GetSection("Weatherstack"));
+
 
 builder.Services.Configure<RedisOptions>(
     builder.Configuration.GetSection("Redis"));
 
 builder.Services.AddHttpClient<OpenWeatherMapServiceClient>((provider, client) =>
 {
-    var options = provider.GetRequiredService<IOptions<WeatherApiOptions>>().Value;
+    var options = provider.GetRequiredService<IOptions<OpenMapWeatherApiOptions>>().Value;
 
     client.BaseAddress = new Uri(options.BaseUrl);
 });
 
 builder.Services.AddHttpClient<OpenWeatherGeocodingServiceClient>((provider, client) =>
 {
-    var options = provider.GetRequiredService<IOptions<WeatherApiOptions>>().Value;
+    var options = provider.GetRequiredService<IOptions<OpenMapWeatherApiOptions>>().Value;
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+});
+
+builder.Services.AddHttpClient<WeatherstackServiceClient>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<WeatherstackWeatherApiOptions>>().Value;
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+});
+
+builder.Services.AddHttpClient<WeatherstackGeocodingServiceClient>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<WeatherstackWeatherApiOptions>>().Value;
 
     client.BaseAddress = new Uri(options.BaseUrl);
 });

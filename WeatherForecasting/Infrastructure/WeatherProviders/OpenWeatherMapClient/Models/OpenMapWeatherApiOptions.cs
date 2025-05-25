@@ -1,6 +1,6 @@
 namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
-public class WeatherApiOptions
+public class OpenMapWeatherApiOptions
 {
     public string ApiKey { get; set; } = string.Empty;
 

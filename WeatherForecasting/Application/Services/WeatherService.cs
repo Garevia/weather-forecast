@@ -20,7 +20,7 @@ public class WeatherService : IWeatherService
         var dtoResult = await service.GetWeatherForecastByCityAsync(city, countryCode);
 
         if (!dtoResult.IsSuccess)
-            return Result<WeatherForecast>.Failure(dtoResult.Error);
+            return Result<WeatherForecast>.Failure(dtoResult.Error.Message, dtoResult.Error.HttpStatusCode);
 
         var dto = dtoResult.Value;
         var forecast = new WeatherForecast(dto.City, dto.CountryCode, dto.Description, dto.TemperatureCelsius, dto.Date);
@@ -34,7 +34,7 @@ public class WeatherService : IWeatherService
         var dtoResult = await service.GetWeatherForecastByLonAndLanAsync(longitude, latitude);
 
         if (!dtoResult.IsSuccess)
-            return Result<WeatherForecast>.Failure(dtoResult.Error);
+            return Result<WeatherForecast>.Failure(dtoResult.Error.Message, dtoResult.Error.HttpStatusCode);
 
         var dto = dtoResult.Value;
         var forecast = new WeatherForecast(dto.City, dto.CountryCode, dto.Description, dto.TemperatureCelsius, dto.Date);
@@ -48,7 +48,7 @@ public class WeatherService : IWeatherService
         var dtoResult = await service.GetFiveDayForecastByLonAndLatAsync(longitude, latitude);
 
         if (!dtoResult.IsSuccess)
-            return Result<WeatherForecastForFiveDays>.Failure(dtoResult.Error);
+            return Result<WeatherForecastForFiveDays>.Failure(dtoResult.Error.Message, dtoResult.Error.HttpStatusCode);
 
         var dto = dtoResult.Value;
         var forecast = new WeatherForecastForFiveDays()
@@ -68,7 +68,7 @@ public class WeatherService : IWeatherService
         var dtoResult = await service.GetFiveDayForecastByCityAsync(city, countryCode);
 
         if (!dtoResult.IsSuccess)
-            return Result<WeatherForecastForFiveDays>.Failure(dtoResult.Error);
+            return Result<WeatherForecastForFiveDays>.Failure(dtoResult.Error.Message, dtoResult.Error.HttpStatusCode);
 
         var dto = dtoResult.Value;
         var forecast = new WeatherForecastForFiveDays()

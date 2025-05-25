@@ -66,6 +66,6 @@ public class GeocodingServiceTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("City not found", result.Error);
+        Assert.Equal("City not found", result.Error.Message);
     }
 }

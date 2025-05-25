@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace WeatherForecasting.Common;
@@ -5,17 +6,18 @@ namespace WeatherForecasting.Common;
 public class Result<T>
 {
     public T? Value { get; }
-    public string? Error { get; }
+    public Error? Error { get; }
     public bool IsSuccess => Error == null;
-
+    
     [JsonConstructor]
-    protected Result(T? value, string? error = null)
+    protected Result(T? value, Error? error = null)
     {
         Value = value;
         Error = error;
     }
     
-    public static Result<T> Success(T value) => new Result<T>(value, null);
+    public static Result<T> Success(T value) => new(value);
 
-    public static Result<T> Failure(string error) => new Result<T>(default, error);
+    public static Result<T> Failure(string message, HttpStatusCode? statusCode = null) =>
+        new(default, new Error(message, statusCode));
 }

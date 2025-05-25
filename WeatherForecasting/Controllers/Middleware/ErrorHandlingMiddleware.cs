@@ -28,11 +28,6 @@ public class ErrorHandlingMiddleware
                 errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
             });
         }
-        catch (WeatherApiException ex)
-        {
-            context.Response.StatusCode = 502;
-            await context.Response.WriteAsJsonAsync(new { message = ex.Message });
-        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
