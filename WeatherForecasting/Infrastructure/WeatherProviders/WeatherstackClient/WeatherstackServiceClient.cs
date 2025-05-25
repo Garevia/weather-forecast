@@ -1,9 +1,8 @@
+using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using WeatherForecasting.Application.DTO;
 using WeatherForecasting.Common;
 using WeatherForecasting.Infrastructure.DTO;
-using WeatherForecasting.Infrastructure.Utilities;
 using WeatherForecasting.Infrastructure.WeatherProviders.Common;
 using WeatherForecasting.Infrastructure.WeatherProviders.WeatherstackClient.Models;
 
@@ -47,7 +46,7 @@ public class WeatherstackServiceClient : IWeatherServiceClient
                 CountryCode =  forecast.Location.Country,
                 Description = string.Join(",", forecast.Current.WeatherDescriptions),
                 TemperatureCelsius = (decimal)forecast.Current.Temperature,
-                Date = forecast.Location.LocalTime
+                Date = DateTime.ParseExact(forecast.Location.LocalTime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)
             };
             
             return Result<WeatherDto>.Success(weather);

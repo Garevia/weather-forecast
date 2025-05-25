@@ -1,5 +1,4 @@
 using Moq;
-using WeatherForecasting.Application.Interfaces;
 using WeatherForecasting.Application.Services;
 using WeatherForecasting.Common;
 using WeatherForecasting.Domain.Enums;
@@ -10,20 +9,12 @@ namespace WeatherForecasting.Tests.ApplicationTests.ServicesTests;
 
 public class WeatherServiceTests
 {
-    private readonly Mock<IWeatherServiceFactory> _factoryMock;
     private readonly Mock<IWeatherServiceClient> _clientMock;
     private readonly WeatherService _service;
 
     public WeatherServiceTests()
     {
-        _factoryMock = new Mock<IWeatherServiceFactory>();
         _clientMock = new Mock<IWeatherServiceClient>();
-
-        _factoryMock
-            .Setup(f => f.GetWeatherServiceClient(It.IsAny<WeatherProviderType>()))
-            .Returns(_clientMock.Object);
-
-        _service = new WeatherService(_factoryMock.Object);
     }
 
     [Fact]

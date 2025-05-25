@@ -16,7 +16,8 @@ public class WeatherstackLocation
 
     [JsonPropertyName("country")] public string Country { get; set; }
 
-    [JsonPropertyName("localtime")] public DateTimeOffset LocalTime { get; set; }
+    [JsonPropertyName("localtime")]
+    public string LocalTime { get; set; }
 }
 
 public class WeatherstackCurrent
