@@ -11,7 +11,6 @@ A modular, extensible Weather Forecasting API built with ASP.NET Core. Designed 
 - 🧠 **Domain-Driven Design**: Clear separation of concerns across Domain, Application, Infrastructure, and API layers.
 - ⚡ **Redis Caching**: Reduce third-party calls with smart caching based on coordinates and units.
 - 🧪 **Request Validation**: Strong validation of inputs using FluentValidation and MediatR pipeline behavior.
-- 🛡️ **Resilience Ready**: Designed for extensibility with retry policies and fault handling.
 - 📚 **Swagger UI**: API self-documentation with request/response examples.
 
 ---
@@ -20,7 +19,7 @@ A modular, extensible Weather Forecasting API built with ASP.NET Core. Designed 
 
 ```
 /WeatherForecasting
-├── Api                  # ASP.NET Core Web API layer
+├── Controllers          # ASP.NET Core Web API layer
 ├── Application          # Use cases, DTOs, handlers, interfaces
 ├── Domain               # Core business logic and models
 ├── Infrastructure       # 3rd-party integrations, persistence, caching
@@ -35,11 +34,13 @@ A modular, extensible Weather Forecasting API built with ASP.NET Core. Designed 
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Redis](https://redis.io/) running locally or via Docker
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 ### Redis (local setup using Docker)
 
 ```bash
-docker run -d -p 6379:6379 --name redis redis
+docker run --name my-redis -p 6379:6379 -d redis:latest
 ```
 
 ### Run the API
@@ -49,10 +50,23 @@ cd WeatherForecasting.Api
 dotnet run
 ```
 
+### 🔧 Build and Run Together
+
+```bash
+# Build and start the containers
+docker-compose up --build
+```
+
+# Stop containers without removing them
+docker-compose stop
+
+# Or stop and remove containers
+docker-compose down
+
 ### Access Swagger
 
 ```
-http://localhost:5000/swagger
+http://localhost:5001/swagger
 ```
 
 ---
@@ -62,15 +76,18 @@ http://localhost:5000/swagger
 Update `appsettings.json` or `appsettings.Development.json`:
 
 ```json
-"WeatherApi": {
-  "Provider": "OpenWeather", // or "Weatherstack"
-  "BaseUrl": "https://api.openweathermap.org/",
-  "ApiKey": "your-api-key"
+ "OpenWeatherMap": {
+  "ApiKey": "#OpenWeatherMapApiKey#",
+  "BaseUrl": "#OpenWeatherUrl#"
+},
+"Weatherstack": {
+  "ApiKey": "#WeatherstackApiKey#",
+  "BaseUrl": "#WeatherstackUrl#"
 },
 "Redis": {
-  "ConnectionString": "localhost:6379",
-  "CacheDuration": "00:30:00" // TimeSpan format
-}
+  "Connection": "localhost:6379,abortConnect=false",
+  "TimeSpan": "00:15:00"
+},
 ```
 
 ---
