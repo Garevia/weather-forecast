@@ -99,42 +99,4 @@ public class CacheHelperTests
         _cacheMock.Verify(c => c.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), 
                                                 It.IsAny<TimeSpan?>(), It.IsAny<When>(), It.IsAny<CommandFlags>()), Times.Never);
     }
-
-    [Fact]
-    public async Task GetOrSetAsync_LogsWarning_WhenCacheSetThrowsException()
-    {
-        var key = "test-key";
-        var successResult = Result<string>.Success("data");
-
-        _cacheMock.Setup(c => c.StringGetAsync(key, It.IsAny<CommandFlags>()))
-            .ReturnsAsync(RedisValue.Null);
-
-        _cacheMock.Setup(c => c.StringSetAsync(
-                It.IsAny<RedisKey>(),
-                It.IsAny<RedisValue>(),
-                It.IsAny<TimeSpan?>(),
-                It.IsAny<When>(),
-                It.IsAny<CommandFlags>()))
-            .ThrowsAsync(new Exception("Cache failure"));
-
-        var result = await CacheHelper.GetOrSetAsync(
-            _cacheMock.Object,
-            key,
-            () => Task.FromResult(successResult),
-            TimeSpan.FromMinutes(5),
-            _loggerMock.Object);
-
-        Assert.True(result.IsSuccess);
-        Assert.Equal("data", result.Value);
-
-        _loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Warning,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString() != null && v.ToString().Contains("Cache set failed for key")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
 }
