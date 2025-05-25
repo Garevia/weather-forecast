@@ -22,7 +22,6 @@ builder.Services.AddControllers();
 // Register real services
 builder.Services.AddTransient<OpenWeatherMapServiceClient>();
 builder.Services.AddSingleton<WeatherstackServiceClient>();
-builder.Services.AddTransient<WeatherstackGeocodingServiceClient>();
 
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 builder.Services.AddSingleton<IWeatherServiceFactory, WeatherServiceFactory>();

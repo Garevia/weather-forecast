@@ -6,6 +6,12 @@ using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
+/// <summary>
+/// Handles the retrieval of a 5-day weather forecast for a specified city and country,
+/// using the selected weather provider.
+/// Processes a <see cref="GetWeatherForecastForFiveDaysByCityQuery"/> and returns a 
+/// <see cref="Result{WeatherForecastForFiveDaysDto}"/> containing the forecast data.
+/// </summary>
 public class GetWeatherForecastForFiveDaysByCityHandler : IRequestHandler<GetWeatherForecastForFiveDaysByCityQuery,
     Result<WeatherForecastForFiveDaysDto>>
 {

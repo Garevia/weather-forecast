@@ -4,6 +4,9 @@ using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Interfaces;
 
+/// <summary>
+/// Interface for getting weather data
+/// </summary>
 public interface IWeatherService
 {
     /// <summary>

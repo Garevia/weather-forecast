@@ -1,5 +1,9 @@
 namespace WeatherForecasting.Infrastructure.DTO;
 
+/// <summary>
+/// Data Transfer Object representing a weather snapshot,
+/// used for transferring weather data between layers or services.
+/// </summary>
 public class WeatherDto
 {
     public string City { get; set; } = default!;

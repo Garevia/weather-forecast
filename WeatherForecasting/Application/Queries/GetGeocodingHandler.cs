@@ -5,6 +5,11 @@ using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
+/// <summary>
+/// Handles the retrieval of geolocation data based on the provided geocoding query.
+/// This handler processes a <see cref="GetGeocodingQuery"/> and returns a <see cref="Result{GeolocationDto}"/> 
+/// containing the location data (e.g., latitude and longitude) if found.
+/// </summary>
 public class GetGeocodingHandler : IRequestHandler<GetGeocodingQuery, Result<GeolocationDto>>
 {
     private readonly IGeolocationServiceFactory _geocodingServiceFactory;

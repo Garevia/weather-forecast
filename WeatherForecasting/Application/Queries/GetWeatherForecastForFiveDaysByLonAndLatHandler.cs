@@ -6,6 +6,12 @@ using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
+/// <summary>
+/// Handles the retrieval of a 5-day weather forecast based on geographic coordinates (longitude and latitude),
+/// using the specified weather provider.
+/// Processes a <see cref="GetWeatherForecastForFiveDaysByLonAndLatQuery"/> and returns a 
+/// <see cref="Result{WeatherForecastForFiveDaysDto}"/> containing the forecast data.
+/// </summary>
 public class GetWeatherForecastForFiveDaysByLonAndLatHandler : IRequestHandler<GetWeatherForecastForFiveDaysByLonAndLatQuery, Result<WeatherForecastForFiveDaysDto>>
 {
     private readonly IWeatherService _weatherService;

@@ -1,5 +1,8 @@
 namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient;
 
+/// <summary>
+/// Contains endpoint templates for interacting with the OpenWeather API.
+/// </summary>
 public static class OpenWeatherApiEndpoints
 {
     public const string CurrentWeatherByCity = "/data/2.5/weather?q={0},{1}&units=metric&appid={2}";

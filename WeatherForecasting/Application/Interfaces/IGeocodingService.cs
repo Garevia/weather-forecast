@@ -4,6 +4,9 @@ using WeatherForecasting.Domain.Enums;
 
 namespace WeatherForecasting.Application.Interfaces;
 
+/// <summary>
+/// Service for getting location data
+/// </summary>
 public interface IGeocodingService
 {
     /// <summary>

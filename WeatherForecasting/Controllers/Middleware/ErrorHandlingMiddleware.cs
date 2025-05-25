@@ -2,6 +2,9 @@ using FluentValidation;
 
 namespace WeatherForecasting.Controllers.Middleware;
 
+/// <summary>
+/// Middleware for error handling
+/// </summary>
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;

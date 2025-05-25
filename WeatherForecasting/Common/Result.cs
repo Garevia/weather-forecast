@@ -3,6 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace WeatherForecasting.Common;
 
+/// <summary>
+/// Result data for getting data and error
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class Result<T>
 {
     public T? Value { get; }

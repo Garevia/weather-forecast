@@ -3,6 +3,11 @@ using MediatR;
 
 namespace WeatherForecasting.Application.Validators;
 
+/// <summary>
+/// MediatR pipeline behavior that performs validation on the incoming request before it reaches the handler.
+/// </summary>
+/// <typeparam name="TRequest">The type of the request being validated.</typeparam>
+/// <typeparam name="TResponse">The type of the response returned by the handler.</typeparam>
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

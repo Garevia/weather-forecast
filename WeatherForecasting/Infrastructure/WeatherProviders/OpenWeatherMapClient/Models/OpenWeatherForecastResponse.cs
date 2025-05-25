@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace WeatherForecasting.Infrastructure.WeatherProviders.OpenWeatherMapClient.Models;
 
+/// <summary>
+/// Represents the response from the OpenWeather API for a weather forecast.
+/// </summary>
 public class OpenWeatherForecastResponse
 {
     [JsonPropertyName("message")]
@@ -12,6 +15,9 @@ public class OpenWeatherForecastResponse
     public City City { get; set; }
 }
 
+/// <summary>
+/// Represents a single forecast data point in the OpenWeather API response.
+/// </summary>
 public class List
 {
     [JsonPropertyName("dt")]
@@ -24,6 +30,9 @@ public class List
     public List<Weather> Weather { get; set; }
 }
 
+/// <summary>
+/// Represents city information in the OpenWeather API response.
+/// </summary>
 public class City
 {
     [JsonPropertyName("name")]

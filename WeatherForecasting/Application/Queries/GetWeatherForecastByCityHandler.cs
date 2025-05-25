@@ -5,6 +5,11 @@ using WeatherForecasting.Common;
 
 namespace WeatherForecasting.Application.Queries;
 
+/// <summary>
+/// Handles the retrieval of weather forecast data for a specified city.
+/// Processes a <see cref="GetWeatherForecastByCityQuery"/> and returns a 
+/// <see cref="Result{WeatherForecastDto}"/> containing the forecast details.
+/// </summary>
 public class GetWeatherForecastByCityHandler : IRequestHandler<GetWeatherForecastByCityQuery, Result<WeatherForecastDto>>
 {
     private readonly IWeatherService _weatherService;
