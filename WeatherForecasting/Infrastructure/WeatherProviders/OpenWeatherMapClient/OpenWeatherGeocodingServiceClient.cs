@@ -43,6 +43,11 @@ public class OpenWeatherGeocodingServiceClient : IGeocodingServiceClient
             
             var locations = JsonSerializer.Deserialize<List<OpenWeatherGeolocationResponse>>(content, options);
 
+            if (locations is null || !locations.Any())
+            {
+                return Result<GeolocationDto>.Failure("Error in getting data");
+            }
+            
             var location = new GeolocationDto(Math.Round(locations[0].Lat, 7), Math.Round(locations[0].Lon, 7));
             
             return Result<GeolocationDto>.Success(location);

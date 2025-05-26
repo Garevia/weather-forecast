@@ -23,11 +23,11 @@ public static class ServiceCollectionExtensions
 
         // Configuration binding
         services.Configure<OpenMapWeatherApiOptions>(
-            configuration.GetSection("OpenWeatherMap"));
+            configuration.GetSection("OpenWeatherMap") ?? throw new Exception("No OpenWeather API credentials are provided"));
         services.Configure<WeatherstackWeatherApiOptions>(
-            configuration.GetSection("Weatherstack"));
+            configuration.GetSection("Weatherstack") ?? throw new Exception("No Weatherstack API credentials are provided"));
         services.Configure<RedisOptions>(
-            configuration.GetSection("Redis"));
+            configuration.GetSection("Redis") ?? throw new Exception("No Redis configuration is provided"));
 
         // Redis connection
         var redisConnection = configuration.GetValue<string>("Redis:Connection") ?? "localhost:6379";

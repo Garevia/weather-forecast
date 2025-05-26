@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using WeatherForecasting.Common;
@@ -78,7 +79,7 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             {
                 City = city,
                 CountryCode = countryCode,
-                Forecasts = forecast.list.Select(x => new WeatherDto()
+                Forecasts = forecast.List.Select(x => new WeatherDto()
                 {
                     City = forecast.City.Name,
                     CountryCode = forecast.City.Country,
@@ -100,7 +101,10 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
     {
         try
         {
-            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByLongitudeAndLatitude, latitude, longitude,
+            var latStr = latitude.ToString("0.#######", CultureInfo.InvariantCulture);
+            var longStr = longitude.ToString("0.#######", CultureInfo.InvariantCulture);
+            
+            var url = string.Format(OpenWeatherApiEndpoints.CurrentWeatherByLongitudeAndLatitude, latStr, longStr,
                 _apiKey);
 
             var response = await _httpClient.GetAsync(url);
@@ -133,7 +137,10 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
     {
         try
         {
-            var url = string.Format(OpenWeatherApiEndpoints.Forecast5Day, latitude, longitude,
+            var latStr = latitude.ToString("0.#######", CultureInfo.InvariantCulture);
+            var longStr = longitude.ToString("0.#######", CultureInfo.InvariantCulture);
+
+            var url = string.Format(OpenWeatherApiEndpoints.Forecast5Day, latStr, longStr,
                 _apiKey);
 
             var response = await _httpClient.GetAsync(url);
@@ -150,7 +157,7 @@ public class OpenWeatherMapServiceClient : IWeatherServiceClient
             {
                 City = forecast.City.Name,
                 CountryCode = forecast.City.Country,
-                Forecasts = forecast.list.Select(x => new WeatherDto()
+                Forecasts = forecast.List.Select(x => new WeatherDto()
                 {
                     City = forecast.City.Country,
                     CountryCode = forecast.City.Country,

@@ -33,7 +33,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
     
     public  async Task<Result<WeatherDto>> GetWeatherForecastByCityAsync(string city, string country)
     {
-        var cacheKey = $"weather{_providerType}:{city}:{country}";
+        var cacheKey = $"weatherForOneDay{_providerType}:{city}:{country}";
 
         return await CacheHelper.GetOrSetAsync(
             _redisDb,
@@ -45,7 +45,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
 
     public  async Task<Result<WeatherDto>> GetWeatherForecastByLonAndLanAsync(double longitude, double latitude)
     {
-        var cacheKey = $"weather{_providerType}:{longitude}:{latitude}";
+        var cacheKey = $"weatherForOneDay{_providerType}:{longitude}:{latitude}";
 
         return await CacheHelper.GetOrSetAsync(
             _redisDb,
@@ -58,7 +58,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
 
     public  async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByLonAndLatAsync(double longitude, double latitude)
     {
-        var cacheKey = $"weather{_providerType}:{longitude}:{latitude}";
+        var cacheKey = $"weatherForFiveDays{_providerType}:{longitude}:{latitude}";
 
         return await CacheHelper.GetOrSetAsync(
             _redisDb,
@@ -70,7 +70,7 @@ public class WeatherServiceClientCachingDecorator : IWeatherServiceClient
 
     public async Task<Result<WeatherForFiveDaysDto>> GetFiveDayForecastByCityAsync(string city, string countryCode)
     {
-        var cacheKey = $"weather{_providerType}:{city}:{countryCode}";
+        var cacheKey = $"weatherForFiveDays{_providerType}:{city}:{countryCode}";
 
         return await CacheHelper.GetOrSetAsync(
             _redisDb,

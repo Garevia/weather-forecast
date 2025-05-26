@@ -9,7 +9,9 @@ public class OpenWeatherForecastResponse
 {
     [JsonPropertyName("message")]
     public int Message { get; set; }
-    public List<List> list { get; set; }
+    
+    [JsonPropertyName("list")]
+    public List<List> List { get; set; }
     
     [JsonPropertyName("city")]
     public City City { get; set; }

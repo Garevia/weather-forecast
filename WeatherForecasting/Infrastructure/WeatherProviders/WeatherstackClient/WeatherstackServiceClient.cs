@@ -38,14 +38,17 @@ public class WeatherstackServiceClient : IWeatherServiceClient
 
             if (!response.IsSuccessStatusCode)
             {
-                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
-
-                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
-                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {response.StatusCode}", response.StatusCode);
             }
 
             var forecast = JsonSerializer.Deserialize<WeatherstackCurrentResponse>(content);
-
+            if (forecast is null)
+            {
+                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
+                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
+            }
+           
             var weather = new WeatherDto()
             {
                 City = forecast.Location.Name,
@@ -75,14 +78,18 @@ public class WeatherstackServiceClient : IWeatherServiceClient
 
             if (!response.IsSuccessStatusCode)
             {
-                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
-
-                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
-                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {response.StatusCode}", response.StatusCode);
             }
 
             var forecast = JsonSerializer.Deserialize<WeatherstackCurrentResponse>(content);
 
+            if (forecast is null)
+            {
+                var errorModel = JsonSerializer.Deserialize<ClientError>(content);
+                return Result<WeatherDto>.Failure($"Error in getting data, error code {errorModel.Error.Code}", 
+                    ErrorCodeMapper.MapToHttpStatusCode(errorModel.Error.Code));
+            }
+            
             var weather = new WeatherDto()
             {
                 City = forecast.Location.Name,
